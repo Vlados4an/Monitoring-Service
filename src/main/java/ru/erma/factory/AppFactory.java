@@ -5,7 +5,7 @@ import ru.erma.handler.HandlerDependencies;
 import ru.erma.handler.MainHandler;
 import ru.erma.handler.UserHandler;
 import ru.erma.in.MonitoringConsole;
-import ru.erma.model.AuditLog;
+import ru.erma.model.Audit;
 import ru.erma.model.Reading;
 import ru.erma.model.Session;
 import ru.erma.model.User;
@@ -37,7 +37,7 @@ public class AppFactory {
     public static MonitoringConsole createApp() {
         UserRepository<String, User> userRepository = new UserRepositoryImpl();
         ReadingRepository<String, Reading> readingRepository = new ReadingRepositoryImpl();
-        AuditRepository<AuditLog> auditRepository = new AuditRepositoryImpl();
+        AuditRepository<Audit> auditRepository = new AuditRepositoryImpl();
 
         UserService userService = new UserService(userRepository);
         ReadingService readingService = new ReadingService(readingRepository);

@@ -11,16 +11,16 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class AuditLog {
+public class Audit {
     Long id;
-    private List<String> logs;
+    private List<String> audits;
 
     /**
      * Default constructor for the AuditLog class.
      * Initializes the list of log entries.
      */
-    public AuditLog(){
-        this.logs = new ArrayList<>();
+    public Audit(){
+        this.audits = new ArrayList<>();
     }
 
     /**
@@ -34,7 +34,7 @@ public class AuditLog {
         StringBuilder sb = new StringBuilder();
         sb.append("Audit Log ID: ").append(id).append("\n");
         sb.append("Logs: \n");
-        for (String log : logs) {
+        for (String log : audits) {
             sb.append(" - ").append(log).append("\n");
         }
         return sb.toString();

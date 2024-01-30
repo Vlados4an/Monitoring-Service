@@ -1,5 +1,6 @@
 package ru.erma.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +39,7 @@ class UserServiceTest {
      * it saves a new User.
      */
     @Test
+    @DisplayName("Save method adds a new user when username does not exist")
     void registerUser_savesNewUser_whenUsernameDoesNotExist() throws NoSuchAlgorithmException {
         userService.registerUser("testUser", "password");
 
@@ -49,6 +51,7 @@ class UserServiceTest {
      * it throws a UsernameAlreadyExistException.
      */
     @Test
+    @DisplayName("Register user throws exception when username exists")
     void registerUser_throwsException_whenUsernameExists() throws NoSuchAlgorithmException {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(new User()));
 
@@ -62,6 +65,7 @@ class UserServiceTest {
      * it returns true.
      */
     @Test
+    @DisplayName("Authenticate user returns true when correct credentials provided")
     void authenticateUser_returnsTrue_whenCorrectCredentialsProvided() throws NoSuchAlgorithmException {
         User user = new User();
         user.setUsername("testUser");
@@ -79,6 +83,7 @@ class UserServiceTest {
      * it returns false.
      */
     @Test
+    @DisplayName("Authenticate user returns false when incorrect credentials provided")
     void authenticateUser_returnsFalse_whenIncorrectCredentialsProvided() throws NoSuchAlgorithmException {
         User user = new User();
         user.setUsername("testUser");
@@ -96,6 +101,7 @@ class UserServiceTest {
      * it returns false.
      */
     @Test
+    @DisplayName("Authenticate user returns false when user does not exist")
     void authenticateUser_returnsFalse_whenUserDoesNotExist() throws NoSuchAlgorithmException {
         when(userRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
 

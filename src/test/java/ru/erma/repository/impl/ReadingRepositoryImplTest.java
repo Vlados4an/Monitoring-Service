@@ -1,6 +1,7 @@
 package ru.erma.repository.impl;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Reading;
 
@@ -27,6 +28,7 @@ class ReadingRepositoryImplTest {
      * This test verifies that the save method of ReadingRepositoryImpl adds a reading to the user's readings.
      */
     @Test
+    @DisplayName("Save method adds a reading to the user's readings")
     void save_addsReadingToUserReadings() {
         Reading reading = new Reading();
         reading.setMonth(1);
@@ -43,6 +45,7 @@ class ReadingRepositoryImplTest {
      * This test verifies that the findByUsername method of ReadingRepositoryImpl returns an empty list when the user has no readings.
      */
     @Test
+    @DisplayName("FindByUsername method returns an empty list if no readings")
     void findByUsername_returnsEmptyListIfNoReadings() {
         List<Reading> userReadings = readingRepository.findByUsername("nonExistentUser");
 
@@ -53,6 +56,7 @@ class ReadingRepositoryImplTest {
      * This test verifies that the findByUsernameAndMonthAndYear method of ReadingRepositoryImpl returns readings for a specific month and year.
      */
     @Test
+    @DisplayName("FindByUsernameAndMonthAndYear method returns readings for a specific month")
     void findByUsernameForMonth_returnsReadingsForSpecificMonth(){
         Reading reading1 = new Reading();
         reading1.setMonth(1);
@@ -74,6 +78,7 @@ class ReadingRepositoryImplTest {
      * This test verifies that the findByUsernameAndMonthAndYear method of ReadingRepositoryImpl returns an empty list when the user has no readings for a specific month and year.
      */
     @Test
+    @DisplayName("FindByUsernameAndMonthAndYear method returns an empty list if no readings for a specific month")
     void findByUsernameForMonth_returnsEmptyListIfNoReadingsForMonth() {
         Reading reading = new Reading();
         reading.setMonth(1);

@@ -1,6 +1,7 @@
 package ru.erma.repository.impl;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Reading;
 import ru.erma.model.User;
@@ -30,6 +31,7 @@ public class UserRepositoryImplTest {
      * and that the user can be retrieved afterwards.
      */
     @Test
+    @DisplayName("Save method adds a user to the repository and the user can be retrieved")
     public void save_addsUserToRepositoryAndCanBeRetrieved() {
         User user = new User();
         user.setUsername("testUser");
@@ -46,6 +48,7 @@ public class UserRepositoryImplTest {
      * when the user does not exist in the repository.
      */
     @Test
+    @DisplayName("FindByUsername method returns an empty Optional if user does not exist")
     public void findByUsername_returnsEmptyOptionalIfUserDoesNotExist() {
         Optional<User> retrievedUser = userRepository.findByUsername("nonExistentUser");
 

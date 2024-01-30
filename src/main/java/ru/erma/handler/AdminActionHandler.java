@@ -1,7 +1,7 @@
 package ru.erma.handler;
 
 import lombok.RequiredArgsConstructor;
-import ru.erma.model.AuditLog;
+import ru.erma.model.Audit;
 
 import java.util.List;
 import java.util.Scanner;
@@ -26,8 +26,8 @@ public class AdminActionHandler implements ActionHandler{
     public void handleAction(int choice) {
         switch (choice) {
             case 1:
-                List<AuditLog> audits = dependencies.auditService().getAllAudits();
-                for (AuditLog audit : audits) {
+                List<Audit> audits = dependencies.auditService().getAllAudits();
+                for (Audit audit : audits) {
                     System.out.println(audit);
                 }
                 dependencies.auditService().logAction("Admin viewed audits");
