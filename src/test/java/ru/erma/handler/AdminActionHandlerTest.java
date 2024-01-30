@@ -1,11 +1,12 @@
 package ru.erma.handler;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.erma.model.AuditLog;
+import ru.erma.model.Audit;
 import ru.erma.model.Session;
 import ru.erma.service.AuditService;
 import ru.erma.service.ReadingStructureService;
@@ -62,11 +63,12 @@ class AdminActionHandlerTest {
      * it retrieves all audits and logs the action.
      */
     @Test
+    @DisplayName("HandleAction method displays audits when choice is 1")
     void handleAction_displaysAudits_whenChoiceIs1() {
-        AuditLog audit1 = new AuditLog();
-        audit1.getLogs().add("action1");
-        AuditLog audit2 = new AuditLog();
-        audit2.getLogs().add("action2");
+        Audit audit1 = new Audit();
+        audit1.getAudits().add("action1");
+        Audit audit2 = new Audit();
+        audit2.getAudits().add("action2");
         when(dependencies.auditService()).thenReturn(auditService);
         when(dependencies.auditService().getAllAudits()).thenReturn(Arrays.asList(audit1, audit2));
 
@@ -81,6 +83,7 @@ class AdminActionHandlerTest {
      * it logs out the user and logs the action.
      */
     @Test
+    @DisplayName("HandleAction method logs out when choice is 4")
     void handleAction_logsOut_whenChoiceIs4() {
         when(dependencies.session()).thenReturn(session);
         when(dependencies.userHandler()).thenReturn(userHandler);
@@ -96,6 +99,7 @@ class AdminActionHandlerTest {
      * it exits the application and logs the action.
      */
     @Test
+    @DisplayName("HandleAction method exits application when choice is 5")
     void handleAction_exitsApplication_whenChoiceIs5() {
         when(dependencies.mainHandler()).thenReturn(mainHandler);
         when(dependencies.auditService()).thenReturn(auditService);
@@ -110,6 +114,7 @@ class AdminActionHandlerTest {
      * it does nothing.
      */
     @Test
+    @DisplayName("HandleAction method does nothing when choice is invalid")
     void handleAction_doesNothing_whenChoiceIsInvalid() {
         when(dependencies.auditService()).thenReturn(auditService);
         when(dependencies.readingStructureService()).thenReturn(readingStructureService);

@@ -1,7 +1,7 @@
 package ru.erma.service;
 
 import lombok.RequiredArgsConstructor;
-import ru.erma.model.AuditLog;
+import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuditService {
 
-    private final AuditRepository<AuditLog> auditRepository;
+    private final AuditRepository<Audit> auditRepository;
 
     /**
      * Logs an action by creating a new AuditLog and saving it in the AuditRepository.
@@ -21,9 +21,9 @@ public class AuditService {
      * @param action the action to log
      */
     public void logAction(String action){
-        AuditLog auditLog = new AuditLog();
-        auditLog.getLogs().add(action);
-        auditRepository.save(auditLog);
+        Audit audit = new Audit();
+        audit.getAudits().add(action);
+        auditRepository.save(audit);
     }
 
     /**
@@ -31,7 +31,7 @@ public class AuditService {
      *
      * @return a list of all AuditLog objects
      */
-    public List<AuditLog> getAllAudits(){
+    public List<Audit> getAllAudits(){
         return auditRepository.findAll();
     }
 }

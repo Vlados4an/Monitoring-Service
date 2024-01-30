@@ -1,11 +1,11 @@
 package ru.erma.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import ru.erma.model.AuditLog;
+import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,7 +27,7 @@ class AuditServiceTest {
      * Mock of AuditRepository used in the tests.
      */
     @Mock
-    private AuditRepository<AuditLog> auditRepository;
+    private AuditRepository<Audit> auditRepository;
 
     /**
      * The AuditService instance under test, with mocked dependencies.
@@ -40,10 +40,11 @@ class AuditServiceTest {
      * it saves a new AuditLog with the provided action.
      */
     @Test
+    @DisplayName("LogAction method saves a new Audit with the provided action")
     void logAction_savesNewAuditLogWithAction() {
         String action = "testAction";
         auditService.logAction(action);
-        verify(auditRepository,times(1)).save(any(AuditLog.class));
+        verify(auditRepository,times(1)).save(any(Audit.class));
     }
 
     /**
@@ -51,17 +52,18 @@ class AuditServiceTest {
      * it returns all AuditLogs from the repository.
      */
     @Test
+    @DisplayName("GetAllAudits method returns all Audits from the repository")
     void getAllAudits_returnsAllAuditLogsFromRepository(){
-        AuditLog log1 = new AuditLog();
-        log1.getLogs().add("action1");
-        AuditLog log2 = new AuditLog();
-        log2.getLogs().add("action2");
+        Audit log1 = new Audit();
+        log1.getAudits().add("action1");
+        Audit log2 = new Audit();
+        log2.getAudits().add("action2");
         when(auditRepository.findAll()).thenReturn(Arrays.asList(log1,log2));
 
-        List<AuditLog> allAudits = auditService.getAllAudits();
+        List<Audit> allAudits = auditService.getAllAudits();
 
         assertThat(allAudits).hasSize(2);
-        assertThat(allAudits.get(0).getLogs().get(0)).isEqualTo("action1");
-        assertThat(allAudits.get(1).getLogs().get(0)).isEqualTo("action2");
+        assertThat(allAudits.get(0).getAudits().get(0)).isEqualTo("action1");
+        assertThat(allAudits.get(1).getAudits().get(0)).isEqualTo("action2");
     }
 }

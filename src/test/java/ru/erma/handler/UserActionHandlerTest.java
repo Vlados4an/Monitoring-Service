@@ -1,5 +1,6 @@
 package ru.erma.handler;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,6 +51,7 @@ class UserActionHandlerTest {
      */
 
     @Test
+    @DisplayName("HandleAction method logs out when choice is 5")
     void handleAction_logsOut_whenChoiceIs5() {
         when(dependencies.session()).thenReturn(session);
         when(dependencies.userHandler()).thenReturn(userHandler);

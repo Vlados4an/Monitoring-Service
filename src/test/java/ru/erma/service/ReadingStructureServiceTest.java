@@ -1,6 +1,7 @@
 package ru.erma.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,7 @@ class ReadingStructureServiceTest {
      * it adds a new type to the list of reading types.
      */
     @Test
+    @DisplayName("AddReadingType method adds a new type to the list")
     void addReadingType_addsNewTypeToList() {
         readingStructureService.addReadingType("gas");
 
@@ -36,6 +38,7 @@ class ReadingStructureServiceTest {
      * it removes the type from the list of reading types.
      */
     @Test
+    @DisplayName("RemoveReadingType method removes an existing type from the list")
     void removeReadingType_removesTypeFromList() {
         readingStructureService.removeReadingType("heating");
 
@@ -47,6 +50,7 @@ class ReadingStructureServiceTest {
      * it returns false.
      */
     @Test
+    @DisplayName("RemoveReadingType method returns false when type does not exist")
     void removeReadingType_returnsFalseWhenTypeDoesNotExist() {
         boolean result = readingStructureService.removeReadingType("gas");
 
@@ -58,6 +62,7 @@ class ReadingStructureServiceTest {
      * it returns true.
      */
     @Test
+    @DisplayName("RemoveReadingType method returns true when type exists")
     void removeReadingType_returnsTrueWhenTypeExists() {
         boolean result = readingStructureService.removeReadingType("heating");
 

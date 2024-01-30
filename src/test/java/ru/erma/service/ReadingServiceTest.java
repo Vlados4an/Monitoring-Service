@@ -1,5 +1,6 @@
 package ru.erma.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,6 +43,7 @@ class ReadingServiceTest {
      * it adds a new Reading to the user's readings.
      */
     @Test
+    @DisplayName("Submit readings adds a reading to user readings")
     void submitReadings_addsReadingToUserReadings() {
         Map<String, Integer> values = new HashMap<>();
         values.put("heating", 20);
@@ -58,6 +60,7 @@ class ReadingServiceTest {
      * it returns all Readings for a specific month and year for the user.
      */
     @Test
+    @DisplayName("Get readings for month returns readings for specific month and year")
     void getReadingsForMonth_returnsReadingsForSpecificMonthAndYear() {
         Reading reading1 = new Reading();
         reading1.setMonth(1);
@@ -75,6 +78,7 @@ class ReadingServiceTest {
      * it returns all Readings for the user.
      */
     @Test
+    @DisplayName("Get reading history returns all readings for user")
     void getReadingHistory_returnsAllReadingsForUser() {
         Reading reading1 = new Reading();
         reading1.setMonth(1);
@@ -96,6 +100,7 @@ class ReadingServiceTest {
      * it returns the most recent Reading for the user.
      */
     @Test
+    @DisplayName("Get actual readings returns most recent reading for user")
     void getActualReadings_returnsMostRecentReadingForUser() {
         Reading reading1 = new Reading();
         reading1.setMonth(1);

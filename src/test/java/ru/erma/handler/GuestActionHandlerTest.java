@@ -1,6 +1,7 @@
 package ru.erma.handler;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,6 +53,7 @@ class GuestActionHandlerTest {
      * This test verifies that the handleAction method of GuestActionHandler exits the application and logs the action when the choice is 3.
      */
     @Test
+    @DisplayName("HandleAction method exits application when choice is 3")
     void handleAction_exitsApplication_whenChoiceIs3() {
         when(dependencies.mainHandler()).thenReturn(mainHandler);
         when(dependencies.auditService()).thenReturn(auditService);
@@ -63,6 +65,7 @@ class GuestActionHandlerTest {
      * This test verifies that the handleAction method of GuestActionHandler does nothing when the choice is invalid.
      */
     @Test
+    @DisplayName("HandleAction method does nothing when choice is invalid")
     void handleAction_doesNothing_whenChoiceIsInvalid() {
         guestActionHandler.handleAction(4);
 
