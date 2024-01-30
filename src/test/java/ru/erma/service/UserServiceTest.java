@@ -52,7 +52,7 @@ class UserServiceTest {
      */
     @Test
     @DisplayName("Register user throws exception when username exists")
-    void registerUser_throwsException_whenUsernameExists() throws NoSuchAlgorithmException {
+    void registerUser_throwsException_whenUsernameExists() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(new User()));
 
         assertThatThrownBy(() -> userService.registerUser("testUser", "password"))
