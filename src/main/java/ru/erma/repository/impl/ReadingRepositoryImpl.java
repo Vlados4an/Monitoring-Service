@@ -1,64 +1,98 @@
 package ru.erma.repository.impl;
 
+import ru.erma.config.DBConnectionProvider;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
-        * This class provides an implementation of the ReadingRepository interface.
-        * It uses a HashMap to store Reading objects for each user, using their username as the key.
-        */
-public class ReadingRepositoryImpl implements ReadingRepository<String,Reading> {
-    private final Map<String, List<Reading>> readings = new HashMap<>();
+public class ReadingRepositoryImpl implements ReadingRepository<String, Reading> {
+    private final DBConnectionProvider connectionProvider;
 
-    /**
-     * Saves the given Reading object for the specified username.
-     * The Reading is added to the list of readings for the user in the readings map.
-     *
-     * @param username the username for which to save the reading
-     * @param reading the Reading object to save
-     */
+    public ReadingRepositoryImpl(DBConnectionProvider connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
+
     @Override
     public void save(String username, Reading reading) {
-        List<Reading> userReadings = readings.getOrDefault(username, new ArrayList<>());
-        userReadings.add(reading);
-        readings.put(username, userReadings);
+        StringBuilder sql = new StringBuilder("INSERT INTO readings (username, month, year");
+        StringBuilder values = new StringBuilder(" VALUES (?, ?, ?");
+        Map<String, Integer> readingValues = reading.getValues();
+        for (String key : readingValues.keySet()) {
+            sql.append(", ").append(key);
+            values.append(", ?");
+        }
+        sql.append(")").append(values).append(")");
+        try (Connection connection = connectionProvider.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            statement.setString(1, username);
+            statement.setInt(2, reading.getMonth());
+            statement.setInt(3, reading.getYear());
+            int index = 4;
+            for (Integer value : readingValues.values()) {
+                statement.setDouble(index++, value);
+            }
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Retrieves all Reading objects for the specified username.
-     *
-     * @param username the username for which to retrieve the readings
-     * @return a list of Reading objects for the specified username
-     */
     @Override
     public List<Reading> findByUsername(String username) {
-        return readings.getOrDefault(username, new ArrayList<>());
+        List<Reading> readings = new ArrayList<>();
+        String sql = "SELECT * FROM readings WHERE username = ?";
+        try (Connection connection = connectionProvider.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Reading reading = getReadingFromResultSet(resultSet);
+                readings.add(reading);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return readings;
     }
-
-    /**
-     * Retrieves all Reading objects for the specified username, month, and year.
-     *
-     * @param username the username for which to retrieve the readings
-     * @param month the month for which to retrieve the readings
-     * @param year the year for which to retrieve the readings
-     * @return a list of Reading objects for the specified username, month, and year
-     */
 
     @Override
     public List<Reading> findByUsernameAndMonthAndYear(String username, int month, int year) {
-        List<Reading> userReadings = findByUsername(username);
-        List<Reading> readingsForMonth = new ArrayList<>();
-        for (Reading reading : userReadings) {
-            if (reading.getMonth() == month && reading.getYear() == year) {
-                readingsForMonth.add(reading);
+        List<Reading> readings = new ArrayList<>();
+        String sql = "SELECT * FROM readings WHERE username = ? AND month = ? AND year = ?";
+        try (Connection connection = connectionProvider.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, username);
+            statement.setInt(2, month);
+            statement.setInt(3, year);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Reading reading = getReadingFromResultSet(resultSet);
+                readings.add(reading);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return readingsForMonth;
+        return readings;
     }
 
+    private Reading getReadingFromResultSet(ResultSet resultSet) throws SQLException {
+        Reading reading = new Reading();
+        reading.setMonth(resultSet.getInt("month"));
+        reading.setYear(resultSet.getInt("year"));
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        Map<String, Integer> values = new HashMap<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            String columnName = metaData.getColumnName(i);
+            if (!columnName.equals("id") && !columnName.equals("username") && !columnName.equals("month") && !columnName.equals("year")) {
+                values.put(columnName, resultSet.getInt(columnName));
+            }
+        }
+        reading.setValues(values);
+        return reading;
+    }
 }

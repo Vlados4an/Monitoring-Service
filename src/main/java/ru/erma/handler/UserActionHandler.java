@@ -72,9 +72,16 @@ public class UserActionHandler implements ActionHandler {
         Map<String, Integer> values = new HashMap<>();
         for (String type : dependencies.readingStructureService().getReadingTypes()) {
             System.out.println("Enter " + type + " reading: ");
-            values.put(type, Integer.parseInt(scanner.nextLine()));
+            Integer value = null;
+            try {
+                value = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for " + type + ". Setting it to null.");
+            }
+            values.put(type, value);
         }
-        dependencies.readingService().submitReadings(dependencies.session().getUsername(), month, year, values);
+        Reading newReading = new Reading(month, year, values);
+        dependencies.readingService().submitReadings(dependencies.session().getUsername(), month, year, newReading.getValues());
         dependencies.auditService().logAction("User submitted readings: " + dependencies.session().getUsername());
     }
 
