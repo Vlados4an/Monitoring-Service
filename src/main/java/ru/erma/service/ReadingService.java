@@ -1,10 +1,12 @@
 package ru.erma.service;
 
 import lombok.RequiredArgsConstructor;
+import ru.erma.handler.HandlerDependencies;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import java.util.Map;
 public class ReadingService {
 
     private final ReadingRepository<String, Reading> readingRepository;
+    private final ReadingStructureService readingStructureService;
 
     /**
      * Submits readings for a user for a specific month and year.
@@ -37,7 +40,12 @@ public class ReadingService {
             }
         }
 
-        Reading newReading = new Reading(month, year, values);
+        Map<String, Integer> newValues = new HashMap<>();
+        for (String type : readingStructureService.getReadingTypes()) {
+            newValues.put(type, values.getOrDefault(type, null));
+        }
+
+        Reading newReading = new Reading(month, year, newValues);
         readingRepository.save(username, newReading);
     }
 
