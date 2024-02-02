@@ -7,11 +7,11 @@
 
     <changeSet id="004-create-table-readings" author="Vlados4an">
         <createTable schemaName="develop" tableName="readings">
-            <column name="id" type="bigint" defaultValueSequenceNext="reading_id_seq">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.reading_id_seq')">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="username" type="varchar(255)">
-                <constraints nullable="false" foreignKeyName="fk_reading_user" referencedTableName="users" referencedColumnNames="username"/>
+                <constraints nullable="false" foreignKeyName="fk_reading_user" references="develop.users(username)"/>
             </column>
             <column name="month" type="int">
                 <constraints nullable="false"/>

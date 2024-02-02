@@ -22,9 +22,12 @@ public class ReadingStructureService {
         readingTypeRepository.addColumnToReadingsTable(type);
     }
 
-    public void removeReadingType(String type) {
-        readingTypes.remove(type);
-        readingTypeRepository.removeColumnFromReadingsTable(type);
+    public boolean removeReadingType(String type) {
+        boolean removed = readingTypes.remove(type);
+        if (removed) {
+            readingTypeRepository.removeColumnFromReadingsTable(type);
+        }
+        return removed;
     }
     private void updateReadingTypes() {
         readingTypes = readingTypeRepository.getReadingTypesFromDatabase();

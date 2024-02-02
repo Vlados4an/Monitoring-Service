@@ -1,6 +1,7 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
+import ru.erma.exception.DatabaseException;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
 
@@ -10,16 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReadingRepositoryImpl implements ReadingRepository<String, Reading> {
-    private final DBConnectionProvider connectionProvider;
+public class ReadingRepositoryImpl extends AbstractRepository implements ReadingRepository<String, Reading> {
 
     public ReadingRepositoryImpl(DBConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+        super(connectionProvider);
     }
-
     @Override
     public void save(String username, Reading reading) {
-        StringBuilder sql = new StringBuilder("INSERT INTO readings (username, month, year");
+        if (reading == null) {
+            throw new DatabaseException("Reading cannot be null",new NullPointerException());
+        }
+        StringBuilder sql = new StringBuilder("INSERT INTO develop.readings (username, month, year");
         StringBuilder values = new StringBuilder(" VALUES (?, ?, ?");
         Map<String, Integer> readingValues = reading.getValues();
         for (String key : readingValues.keySet()) {
@@ -27,59 +29,53 @@ public class ReadingRepositoryImpl implements ReadingRepository<String, Reading>
             values.append(", ?");
         }
         sql.append(")").append(values).append(")");
-        try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
-            statement.setString(1, username);
-            statement.setInt(2, reading.getMonth());
-            statement.setInt(3, reading.getYear());
-            int index = 4;
-            for (Integer value : readingValues.values()) {
-                statement.setDouble(index++, value);
-            }
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(username);
+        parameters.add(reading.getMonth());
+        parameters.add(reading.getYear());
+        parameters.addAll(readingValues.values());
+        executeUpdate(sql.toString(), parameters.toArray());
     }
-
     @Override
     public List<Reading> findByUsername(String username) {
-        List<Reading> readings = new ArrayList<>();
-        String sql = "SELECT * FROM readings WHERE username = ?";
+        String sql = "SELECT * FROM develop.readings WHERE username = ?";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Reading reading = getReadingFromResultSet(resultSet);
-                readings.add(reading);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return getReadingsFromResultSet(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to find readings by username", e);
         }
-        return readings;
     }
-
     @Override
     public List<Reading> findByUsernameAndMonthAndYear(String username, int month, int year) {
-        List<Reading> readings = new ArrayList<>();
-        String sql = "SELECT * FROM readings WHERE username = ? AND month = ? AND year = ?";
+        String sql = "SELECT * FROM develop.readings WHERE username = ? AND month = ? AND year = ?";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
             statement.setInt(2, month);
             statement.setInt(3, year);
-            ResultSet resultSet = statement.executeQuery();
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return getReadingsFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to find readings by username, month and year", e);
+        }
+    }
+    private List<Reading> getReadingsFromResultSet(ResultSet resultSet) {
+        List<Reading> readings = new ArrayList<>();
+        try {
             while (resultSet.next()) {
                 Reading reading = getReadingFromResultSet(resultSet);
                 readings.add(reading);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to get readings from result set", e);
         }
         return readings;
     }
-
     private Reading getReadingFromResultSet(ResultSet resultSet) throws SQLException {
         Reading reading = new Reading();
         reading.setMonth(resultSet.getInt("month"));

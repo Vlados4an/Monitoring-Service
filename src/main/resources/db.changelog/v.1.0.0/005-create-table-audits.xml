@@ -7,7 +7,7 @@
 
     <changeSet id="005-create-table-audits" author="Vlados4an">
         <createTable schemaName="develop" tableName="audits">
-            <column name="id" type="bigint" defaultValueSequenceNext="audit_id_seq">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.audit_id_seq')">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="action" type="varchar(255)">

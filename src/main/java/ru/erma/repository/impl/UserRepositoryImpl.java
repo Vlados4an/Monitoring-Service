@@ -1,6 +1,7 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
+import ru.erma.exception.DatabaseException;
 import ru.erma.model.User;
 import ru.erma.repository.UserRepository;
 
@@ -10,57 +11,33 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * This class provides an implementation of the UserRepository interface.
- * It uses a HashMap to store User objects, using their username as the key.
- */
-public class UserRepositoryImpl implements UserRepository<String, User> {
-    private final DBConnectionProvider connectionProvider;
+public class UserRepositoryImpl extends AbstractRepository implements UserRepository<String, User> {
 
     public UserRepositoryImpl(DBConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+        super(connectionProvider);
     }
 
-    /**
-     * Finds a User object by the specified username.
-     *
-     * @param username the username of the user to find
-     * @return an Optional containing the found User object, or an empty Optional if no user was found
-     */
     @Override
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
+        String sql = "SELECT * FROM develop.users WHERE username = ?";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(getUserFromResultSet(resultSet));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(getUserFromResultSet(resultSet));
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to find user by username", e);
         }
         return Optional.empty();
     }
 
-    /**
-     * Saves the given User object.
-     * The User is stored in the users map, using its username as the key.
-     *
-     * @param user the User object to save
-     */
     @Override
     public void save(User user) {
-        String sql = "INSERT INTO users(username,password,salt) VALUES (?,?,?)";
-        try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getSalt());
-            statement.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+        String sql = "INSERT INTO develop.users(username,password,salt) VALUES (?,?,?)";
+        executeUpdate(sql, user.getUsername(), user.getPassword(), user.getSalt());
     }
 
     private User getUserFromResultSet(ResultSet resultSet) throws SQLException {
