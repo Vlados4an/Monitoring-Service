@@ -24,8 +24,18 @@ import ru.erma.service.ReadingService;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.service.UserService;
 
+/**
+ * The AppFactory class is responsible for creating and configuring the main application components.
+ * It loads the database configuration properties, performs a database migration, and creates the repositories, services, handlers, and session.
+ * It then creates a MonitoringConsole instance with the configured dependencies.
+ */
 public class AppFactory {
 
+    /**
+     * Creates and configures the main application components, and returns a MonitoringConsole instance.
+     *
+     * @return a MonitoringConsole instance with the configured dependencies.
+     */
     public static MonitoringConsole createApp() {
         DatabaseConfiguration.loadProperties();
         DBConnectionProvider connectionProvider = DatabaseConfiguration.connectionProviderConfiguration();
