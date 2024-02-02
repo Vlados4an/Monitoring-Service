@@ -1,12 +1,9 @@
 package ru.erma.config;
 
-import liquibase.Contexts;
-import liquibase.LabelExpression;
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.command.CommandScope;
+import liquibase.command.core.UpdateCommandStep;
+import liquibase.exception.CommandExecutionException;
+import ru.erma.exception.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,16 +35,26 @@ public class DBMigrationService {
     /**
      * Performs the database migration.
      * It creates a new schema if it doesn't exist, then applies the Liquibase changes.
+     * It uses the CommandScope class from Liquibase to execute the update command.
+     * If the update command fails, it prints an error message.
+     * If the connection to the database fails, it throws a DatabaseException.
      */
     public void migration() {
         try(Connection connection = connectionProvider.getConnection()) {
             createSchemaForMigration(connection);
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            database.setLiquibaseSchemaName(schemaName);
-            Liquibase liquibase = new Liquibase(changeLogFile, new ClassLoaderResourceAccessor(), database);
-            liquibase.update();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            try {
+                new CommandScope(UpdateCommandStep.COMMAND_NAME)
+                        .addArgumentValue("defaultSchemaName",schemaName)
+                        .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG,changeLogFile)
+                        .addArgumentValue("url", connectionProvider.url())
+                        .addArgumentValue("username", connectionProvider.username())
+                        .addArgumentValue("password", connectionProvider.password())
+                        .execute();
+            } catch (CommandExecutionException e) {
+                System.out.println("Error running update: "+e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to execute update",e);
         }
     }
 

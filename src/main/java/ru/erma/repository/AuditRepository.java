@@ -3,23 +3,23 @@ package ru.erma.repository;
 import java.util.List;
 
 /**
- * This interface represents a repository for audit logs.
- * It provides methods to save an audit log and to retrieve all audit logs.
+ * This interface represents a repository for audit.
+ * It provides methods to save an audit and to retrieve all audits.
  *
- * @param <E> the type of the audit log
+ * @param <E> the type of the audit
  */
 public interface AuditRepository<E> {
     /**
-     * Saves the given audit log.
+     * Saves the given audit.
      *
-     * @param auditLog the audit log to save
+     * @param audit the audit to save
      */
-    void save(E auditLog);
+    void save(E audit);
 
     /**
-     * Retrieves all audit logs.
+     * Retrieves all audits.
      *
-     * @return a list of all audit logs
+     * @return a list of all audits
      */
     List<E> findAll();
 }
