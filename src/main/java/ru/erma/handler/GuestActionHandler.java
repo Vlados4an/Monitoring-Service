@@ -24,17 +24,21 @@ public class GuestActionHandler implements ActionHandler {
     public void handleAction(int choice) {
         switch (choice) {
             case 1:
-                System.out.print("Введите имя пользователя: ");
+                System.out.println("Введите имя пользователя: ");
                 String username = scanner.nextLine();
-                System.out.print("Введите пароль: ");
+                System.out.println("Введите пароль: ");
                 String password = scanner.nextLine();
                 try {
-                    dependencies.userService().registerUser(username, password);
+                    boolean registered = dependencies.userService().registerUser(username, password);
+                    if (registered) {
+                        System.out.println("Регистрация прошла успешно");
+                        dependencies.auditService().logAction("User registered: " + username);
+                    } else {
+                        System.out.println("Имя пользователя уже существует. Пожалуйста, выберите другое имя пользователя.");
+                    }
                 } catch (NoSuchAlgorithmException e) {
-                    System.out.println("Произошла ошибка при регистрации пользователя. Пожалуйста, попробуйте еще раз.");
+                    System.out.println("Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз.");
                 }
-                System.out.println("Привет, " + username + ". Вы успешно зарегистрировались.");
-                dependencies.auditService().logAction("User successfully registered: " + username);
                 break;
             case 2:
                 System.out.print("Введите имя пользователя: ");

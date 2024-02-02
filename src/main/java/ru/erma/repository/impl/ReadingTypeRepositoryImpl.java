@@ -1,39 +1,32 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
+import ru.erma.exception.DatabaseException;
 import ru.erma.repository.ReadingTypeRepository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReadingTypeRepositoryImpl implements ReadingTypeRepository<String> {
-
-    private final DBConnectionProvider connectionProvider;
+public class ReadingTypeRepositoryImpl extends AbstractRepository implements ReadingTypeRepository<String> {
 
     public ReadingTypeRepositoryImpl(DBConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+        super(connectionProvider);
     }
 
     public void addColumnToReadingsTable(String columnName) {
-        String sql = "ALTER TABLE readings ADD COLUMN " + columnName + " double precision";
-        try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "ALTER TABLE develop.readings ADD COLUMN " + columnName + " double precision";
+        executeUpdate(sql);
     }
 
     public void removeColumnFromReadingsTable(String columnName) {
-        String sql = "ALTER TABLE readings DROP COLUMN " + columnName;
-        try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "ALTER TABLE develop.readings DROP COLUMN " + columnName;
+        executeUpdate(sql);
     }
+
     public List<String> getReadingTypesFromDatabase() {
         List<String> readingTypes = new ArrayList<>();
         try (Connection connection = connectionProvider.getConnection()) {
@@ -46,9 +39,8 @@ public class ReadingTypeRepositoryImpl implements ReadingTypeRepository<String> 
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to get reading types from database", e);
         }
         return readingTypes;
     }
-
 }

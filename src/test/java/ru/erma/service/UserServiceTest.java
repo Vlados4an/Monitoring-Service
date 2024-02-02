@@ -51,13 +51,12 @@ class UserServiceTest {
      * it throws a UsernameAlreadyExistException.
      */
     @Test
-    @DisplayName("Register user throws exception when username exists")
-    void registerUser_throwsException_whenUsernameExists() {
+    @DisplayName("Register user returns false when username exists")
+    void registerUser_returnsFalse_whenUsernameExists() throws NoSuchAlgorithmException {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(new User()));
 
-        assertThatThrownBy(() -> userService.registerUser("testUser", "password"))
-                .isInstanceOf(UsernameAlreadyExistException.class)
-                .hasMessage("Пользователь с таким именем уже существует");
+        boolean result = userService.registerUser("testUser","testPass");
+        assertThat(result).isFalse();
     }
 
     /**

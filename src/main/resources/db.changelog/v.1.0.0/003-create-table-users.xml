@@ -7,7 +7,7 @@
 
     <changeSet id="003-create-table-users" author="Vlados4an">
         <createTable schemaName="develop" tableName="users">
-            <column name="id" type="bigint" defaultValueSequenceNext="user_id_seq">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.user_id_seq')">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="username" type="varchar(255)">

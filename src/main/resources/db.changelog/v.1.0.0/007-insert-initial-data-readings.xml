@@ -6,7 +6,7 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
 
     <changeSet id="007-insert-initial-data-readings" author="Vlados4an">
-        <insert tableName="readings">
+        <insert tableName="readings" schemaName="develop">
             <column name="username" value="test_user"/>
             <column name="month" valueNumeric="1"/>
             <column name="year" valueNumeric="2022"/>

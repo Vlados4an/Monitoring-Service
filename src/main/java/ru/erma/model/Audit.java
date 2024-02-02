@@ -24,15 +24,15 @@ public class Audit {
     }
 
     /**
-     * Returns a string representation of the AuditLog.
-     * The string includes the id of the audit log and its log entries.
+     * Returns a string representation of the Audit.
+     * The string includes the id of the audit and its log entries.
      *
-     * @return a string representation of the AuditLog
+     * @return a string representation of the Audit
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Audit Log ID: ").append(id).append("\n");
+        sb.append("Audit ID: ").append(id).append("\n");
         sb.append("Logs: \n");
         for (String log : audits) {
             sb.append(" - ").append(log).append("\n");
