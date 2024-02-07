@@ -1,54 +1,64 @@
 package ru.erma.service;
 
 import lombok.Getter;
+import ru.erma.repository.ReadingTypeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class provides services related to reading types.
- * It maintains a list of reading types and provides methods to add and remove reading types.
+ * The ReadingStructureService class provides methods to manage the structure of the readings in the database.
+ * It uses a ReadingTypeRepository to add and remove reading types, and to get the reading types from the database.
+ * It maintains a list of the current reading types.
  */
 @Getter
 public class ReadingStructureService {
 
-    // List of reading types
-    private final List<String> readingTypes;
+    private final ReadingTypeRepository<String> readingTypeRepository;
+    private List<String> readingTypes = new ArrayList<>();
 
     /**
-     * Constructor for the ReadingStructureService class.
-     * Initializes the list of reading types with some default types.
+     * Constructs a new ReadingStructureService with the specified reading type repository.
+     * It updates the list of reading types from the database.
+     *
+     * @param readingTypeRepository the repository for reading types.
      */
-    public ReadingStructureService(){
-        this.readingTypes = new ArrayList<>();
-        this.readingTypes.add("heating");
-        this.readingTypes.add("cold water");
-        this.readingTypes.add("hot water");
+    public ReadingStructureService(ReadingTypeRepository<String> readingTypeRepository) {
+        this.readingTypeRepository = readingTypeRepository;
+        updateReadingTypes();
     }
 
     /**
-     * Adds a new reading type to the list.
+     * Adds a reading type to the list and the database.
+     * It adds the reading type to the list and calls the repository's method to add a column to the readings table.
      *
-     * @param type the reading type to add
+     * @param type the reading type to add.
      */
-    public void addReadingType(String type){
+    public void addReadingType(String type) {
         readingTypes.add(type);
+        readingTypeRepository.addColumnToReadingsTable(type);
     }
 
     /**
-     * Removes a reading type from the list.
-     * If the reading type does not exist, prints a message and returns false.
+     * Removes a reading type from the list and the database.
+     * It removes the reading type from the list and, if successful, calls the repository's method to remove a column from the readings table.
      *
-     * @param type the reading type to remove
-     * @return true if the reading type was removed, false otherwise
+     * @param type the reading type to remove.
+     * @return true if the reading type was removed from the list, false otherwise.
      */
     public boolean removeReadingType(String type) {
-        if (!readingTypes.contains(type)) {
-            System.out.println("Такого типа показаний не существует.");
-            return false;
-        } else {
-            readingTypes.remove(type);
-            return true;
+        boolean removed = readingTypes.remove(type);
+        if (removed) {
+            readingTypeRepository.removeColumnFromReadingsTable(type);
         }
+        return removed;
+    }
+
+    /**
+     * Updates the list of reading types from the database.
+     * It calls the repository's method to get the reading types from the database and sets the list to the returned value.
+     */
+    private void updateReadingTypes() {
+        readingTypes = readingTypeRepository.getReadingTypesFromDatabase();
     }
 }

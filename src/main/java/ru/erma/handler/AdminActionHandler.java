@@ -42,10 +42,12 @@ public class AdminActionHandler implements ActionHandler{
             case 3:
                 System.out.println("Введите тип показаний для удаления: ");
                 String removeType = scanner.nextLine();
-                boolean isRemoved = dependencies.readingStructureService().removeReadingType(removeType);
-                if (isRemoved) {
+                boolean removed = dependencies.readingStructureService().removeReadingType(removeType);
+                if (removed) {
                     dependencies.auditService().logAction("Admin removed reading type: " + removeType);
                     System.out.println("Тип показаний успешно удален");
+                } else {
+                    System.out.println("Тип показаний не найден");
                 }
                 break;
             case 4:

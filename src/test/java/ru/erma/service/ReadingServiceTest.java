@@ -32,6 +32,9 @@ class ReadingServiceTest {
     @Mock
     private ReadingRepository<String,Reading> readingRepository;
 
+    @Mock
+    private ReadingStructureService readingStructureService;
+
     /**
      * The ReadingService instance under test, with mocked dependencies.
      */

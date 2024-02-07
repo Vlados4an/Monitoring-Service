@@ -1,91 +1,119 @@
 package ru.erma.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import ru.erma.exception.DatabaseException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Reading;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
- * This class contains unit tests for the ReadingRepositoryImpl class.
+ * The ReadingRepositoryImplTest class tests the functionality of the ReadingRepositoryImpl class.
+ * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
-class ReadingRepositoryImplTest {
+public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
     private ReadingRepositoryImpl readingRepository;
-
     /**
-     * This method is executed before each test.
-     * It initializes the readingRepository instance.
+     * The setUp method initializes the ReadingRepositoryImpl instance before each test.
+     * It calls the setUp method of the superclass to initialize the connection provider,
+     * and then creates a new ReadingRepositoryImpl with the connection provider.
      */
     @BeforeEach
-    public void setUp(){
-        readingRepository = new ReadingRepositoryImpl();
+    void setUp() {
+        super.setUp();
+        readingRepository = new ReadingRepositoryImpl(connectionProvider);
     }
-
     /**
-     * This test verifies that the save method of ReadingRepositoryImpl adds a reading to the user's readings.
+     * This test checks that the save method correctly saves a reading to the database.
+     * It creates a reading, sets its month and year, and then saves it to the database.
+     * It asserts that no exception is thrown when saving the reading.
      */
     @Test
-    @DisplayName("Save method adds a reading to the user's readings")
-    void save_addsReadingToUserReadings() {
+    @DisplayName("Test that reading is saved correctly")
+    void shouldSaveReading() {
+        Map<String,Integer> values = new HashMap<>();
         Reading reading = new Reading();
         reading.setMonth(1);
         reading.setYear(2022);
-        readingRepository.save("testUser",reading);
+        reading.setValues(values);
 
-        List<Reading> userReadings = readingRepository.findByUsername("testUser");
 
-        assertThat(userReadings).hasSize(1);
-        assertThat(userReadings.get(0)).usingRecursiveComparison().isEqualTo(reading);
+        assertThatCode(() -> readingRepository.save("test_user", reading)).doesNotThrowAnyException();
+    }
+    /**
+     * This test checks that the save method correctly handles the case where the reading is null.
+     * It attempts to save a null reading to the database.
+     * It asserts that a DatabaseException is thrown.
+     */
+    @Test
+    @DisplayName("Test that exception is thrown when saving null reading")
+    void shouldThrowExceptionWhenSavingNullReading() {
+        assertThatThrownBy(() -> readingRepository.save("test_user", null))
+                .isInstanceOf(DatabaseException.class);
+    }
+    /**
+     * This test checks that the findByUsername method correctly retrieves all readings for a specific username from the database.
+     * It retrieves the readings for a username and asserts that the list is not empty and that the first reading's month, year, and values match the expected values.
+     */
+    @Test
+    @DisplayName("Test that readings are retrieved correctly by username")
+    void shouldFindByUsername() {
+        List<Reading> readings = readingRepository.findByUsername("test_user");
+
+        assertThat(readings).isNotEmpty();
+        Reading reading = readings.get(0);
+        assertThat(reading.getMonth()).isEqualTo(1);
+        assertThat(reading.getYear()).isEqualTo(2022);
+        assertThat(reading.getValues().get("heating")).isEqualTo(100);
+        assertThat(reading.getValues().get("cold_water")).isEqualTo(200);
+        assertThat(reading.getValues().get("hot_water")).isEqualTo(300);
+    }
+    /**
+     * This test checks that the findByUsername method correctly handles the case where there are no readings for a specific username in the database.
+     * It attempts to retrieve the readings for a username that does not exist in the database.
+     * It asserts that the returned list of readings is empty.
+     */
+    @Test
+    @DisplayName("Test that empty list is returned when no readings for username")
+    void shouldReturnEmptyListWhenNoReadingsForUsername() {
+        List<Reading> readings = readingRepository.findByUsername("nonExistingUser");
+
+        assertThat(readings).isEmpty();
     }
 
     /**
-     * This test verifies that the findByUsername method of ReadingRepositoryImpl returns an empty list when the user has no readings.
+     * This test checks that the findByUsernameAndMonthAndYear method correctly retrieves all readings for a specific username, month, and year from the database.
+     * It retrieves the readings for a username, month, and year and asserts that the list is not empty and that the first reading's month, year, and values match the expected values.
      */
     @Test
-    @DisplayName("FindByUsername method returns an empty list if no readings")
-    void findByUsername_returnsEmptyListIfNoReadings() {
-        List<Reading> userReadings = readingRepository.findByUsername("nonExistentUser");
+    @DisplayName("Test that readings are retrieved correctly by username, month and year")
+    void shouldFindByUsernameAndMonthAndYear() {
+        List<Reading> readings = readingRepository.findByUsernameAndMonthAndYear("test_user", 1, 2022);
 
-        assertThat(userReadings).isEmpty();
+        assertThat(readings).isNotEmpty();
+        Reading reading = readings.get(0);
+        assertThat(reading.getMonth()).isEqualTo(1);
+        assertThat(reading.getYear()).isEqualTo(2022);
+        assertThat(reading.getValues().get("heating")).isEqualTo(100);
+        assertThat(reading.getValues().get("cold_water")).isEqualTo(200);
+        assertThat(reading.getValues().get("hot_water")).isEqualTo(300);
     }
-
     /**
-     * This test verifies that the findByUsernameAndMonthAndYear method of ReadingRepositoryImpl returns readings for a specific month and year.
+     * This test checks that the findByUsernameAndMonthAndYear method correctly handles the case where there are no readings for a specific username, month, and year in the database.
+     * It attempts to retrieve the readings for a username, month, and year that do not exist in the database.
+     * It asserts that the returned list of readings is empty.
      */
     @Test
-    @DisplayName("FindByUsernameAndMonthAndYear method returns readings for a specific month")
-    void findByUsernameForMonth_returnsReadingsForSpecificMonth(){
-        Reading reading1 = new Reading();
-        reading1.setMonth(1);
-        reading1.setYear(2022);
-        readingRepository.save("testUser",reading1);
+    @DisplayName("Test that empty list is returned when no readings for username, month and year")
+    void shouldReturnEmptyListWhenNoReadingsForUsernameAndMonthAndYear() {
+        List<Reading> readings = readingRepository.findByUsernameAndMonthAndYear("nonExistingUser", 1, 2022);
 
-        Reading reading2 = new Reading();
-        reading2.setMonth(2);
-        reading2.setYear(2022);
-        readingRepository.save("testUser",reading2);
-
-        List<Reading> userReadings = readingRepository.findByUsernameAndMonthAndYear("testUser",1,2022);
-
-        assertThat(userReadings).hasSize(1);
-        assertThat(userReadings.get(0)).usingRecursiveComparison().isEqualTo(reading1);
-    }
-
-    /**
-     * This test verifies that the findByUsernameAndMonthAndYear method of ReadingRepositoryImpl returns an empty list when the user has no readings for a specific month and year.
-     */
-    @Test
-    @DisplayName("FindByUsernameAndMonthAndYear method returns an empty list if no readings for a specific month")
-    void findByUsernameForMonth_returnsEmptyListIfNoReadingsForMonth() {
-        Reading reading = new Reading();
-        reading.setMonth(1);
-        reading.setYear(2022);
-        readingRepository.save("testUser",reading);
-
-        List<Reading> userReadings = readingRepository.findByUsernameAndMonthAndYear("testUser",2,2022);
-        assertThat(userReadings).isEmpty();
+        assertThat(readings).isEmpty();
     }
 }

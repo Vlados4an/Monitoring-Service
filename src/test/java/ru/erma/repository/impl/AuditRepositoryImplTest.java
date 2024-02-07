@@ -3,76 +3,79 @@ package ru.erma.repository.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.erma.exception.DatabaseException;
 import ru.erma.model.Audit;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.assertj.core.api.Assertions.*;
 /**
- * This class contains unit tests for the AuditRepositoryImpl class.
+ * The AuditRepositoryImplTest class tests the functionality of the AuditRepositoryImpl class.
+ * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
-public class AuditRepositoryImplTest {
+public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
     private AuditRepositoryImpl auditRepository;
-
     /**
-     * This method is executed before each test.
-     * It initializes the auditRepository instance.
+     * The setUp method initializes the AuditRepositoryImpl instance before each test.
+     * It calls the setUp method of the superclass to initialize the connection provider,
+     * and then creates a new AuditRepositoryImpl with the connection provider.
      */
     @BeforeEach
-    void setUp(){
-        auditRepository = new AuditRepositoryImpl();
+    void setUp() {
+        super.setUp();
+        auditRepository = new AuditRepositoryImpl(connectionProvider);
     }
-
     /**
-     * This test verifies that the save method of AuditRepositoryImpl adds an audit log to the repository.
+     * This test checks that the save method correctly saves an audit to the database.
+     * It creates an audit, adds an action to it, and then saves it to the database.
+     * It asserts that no exception is thrown when saving the audit.
      */
     @Test
-    @DisplayName("Save method adds an audit to the repository")
-    void save_addsAuditLogToRepository() {
+    @DisplayName("Test that audit is saved correctly")
+    void shouldSaveAudit() {
         Audit audit = new Audit();
+        audit.getAudits().add("testAction");
+
+        assertThatCode(() -> auditRepository.save(audit)).doesNotThrowAnyException();
+    }
+    /**
+     * This test checks that the save method correctly handles the case where the audit is null.
+     * It attempts to save a null audit to the database.
+     * It asserts that a DatabaseException is thrown.
+     */
+    @Test
+    @DisplayName("Test that exception is thrown when saving null audit")
+    void shouldThrowExceptionWhenSavingNullAudit() {
+        assertThatThrownBy(() -> auditRepository.save(null))
+                .isInstanceOf(DatabaseException.class);
+    }
+    /**
+     * This test checks that the findAll method correctly retrieves all audits from the database.
+     * It creates an audit, adds an action to it, saves it to the database, and then retrieves all audits.
+     * It asserts that the retrieved audits are not empty and that the first audit contains the added action.
+     */
+    @Test
+    @DisplayName("Test that all audits are retrieved correctly")
+    void shouldFindAllAudits() {
+        Audit audit = new Audit();
+        audit.getAudits().add("testAction");
         auditRepository.save(audit);
 
-        List<Audit> allAudits = auditRepository.findAll();
-        assertThat(allAudits).hasSize(1).contains(audit);
-    }
+        List<Audit> audits = auditRepository.findAll();
 
+        assertThat(audits).isNotEmpty();
+        assertThat(audits.get(0).getAudits().get(0)).isEqualTo("testAction");
+    }
     /**
-     * This test verifies that the save method of AuditRepositoryImpl assigns an ID to the audit log.
+     * This test checks that the findAll method correctly handles the case where there are no audits in the database.
+     * It retrieves all audits from the database.
+     * It asserts that the retrieved audits are empty.
      */
     @Test
-    @DisplayName("Save method assigns an ID to the audit")
-    void save_assignsIdToAuditLog() {
-        Audit audit = new Audit();
-        auditRepository.save(audit);
+    @DisplayName("Test that empty list is returned when there are no audits")
+    void shouldReturnEmptyListWhenNoAudits() {
+        List<Audit> audits = auditRepository.findAll();
 
-        assertThat(audit.getId()).isEqualTo(1L);
-    }
-
-    /**
-     * This test verifies that the findAll method of AuditRepositoryImpl returns all audit logs in the repository.
-     */
-    @Test
-    @DisplayName("FindAll method returns all audits in the repository")
-    void findAll_returnsAllAuditLogs() {
-        Audit audit1 = new Audit();
-        Audit audit2 = new Audit();
-        auditRepository.save(audit1);
-        auditRepository.save(audit2);
-
-        List<Audit> allAudits = auditRepository.findAll();
-
-        assertThat(allAudits).hasSize(2).contains(audit1, audit2);
-    }
-
-    /**
-     * This test verifies that the findAll method of AuditRepositoryImpl returns an empty list when there are no audit logs in the repository.
-     */
-    @Test
-    @DisplayName("FindAll method returns an empty list when there are no audit logs in the repository")
-    void findAll_returnsEmptyListWhenNoAuditLogs() {
-        List<Audit> allAudits = auditRepository.findAll();
-
-        assertThat(allAudits).isEmpty();
+        assertThat(audits).isEmpty();
     }
 }

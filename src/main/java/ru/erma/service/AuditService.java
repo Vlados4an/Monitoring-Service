@@ -7,8 +7,8 @@ import ru.erma.repository.AuditRepository;
 import java.util.List;
 
 /**
- * This class provides services related to AuditLog operations.
- * It uses an AuditRepository to perform operations on AuditLog data.
+ * This class provides services related to Audit operations.
+ * It uses an AuditRepository to perform operations on Audit data.
  */
 @RequiredArgsConstructor
 public class AuditService {
@@ -16,7 +16,7 @@ public class AuditService {
     private final AuditRepository<Audit> auditRepository;
 
     /**
-     * Logs an action by creating a new AuditLog and saving it in the AuditRepository.
+     * Logs an action by creating a new Audit and saving it in the AuditRepository.
      *
      * @param action the action to log
      */
@@ -27,9 +27,9 @@ public class AuditService {
     }
 
     /**
-     * Retrieves all AuditLog objects from the AuditRepository.
+     * Retrieves all Audit objects from the AuditRepository.
      *
-     * @return a list of all AuditLog objects
+     * @return a list of all Audit objects
      */
     public List<Audit> getAllAudits(){
         return auditRepository.findAll();
