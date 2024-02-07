@@ -8,48 +8,66 @@ import ru.erma.model.User;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * This class contains unit tests for the UserRepositoryImpl class.
+ * The UserRepositoryImplTest class tests the functionality of the UserRepositoryImpl class.
+ * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
-public class UserRepositoryImplTest {
+public class UserRepositoryImplTest extends AbstractRepositoryForTest {
     private UserRepositoryImpl userRepository;
-
     /**
-     * This method is executed before each test.
-     * It initializes the userRepository instance.
+     * The setUp method initializes the UserRepositoryImpl instance before each test.
+     * It calls the setUp method of the superclass to initialize the connection provider,
+     * and then creates a new UserRepositoryImpl with the connection provider.
      */
     @BeforeEach
-    public void setUp(){
-        userRepository = new UserRepositoryImpl();
+    void setUp() {
+        super.setUp();
+        userRepository = new UserRepositoryImpl(connectionProvider);
     }
-
     /**
-     * This test verifies that the save method of UserRepositoryImpl adds a user to the repository
-     * and that the user can be retrieved afterwards.
+     * This test checks that the findByUsername method correctly retrieves a user from the database.
+     * It asserts that the returned user is present and that its username matches the expected username.
      */
     @Test
-    @DisplayName("Save method adds a user to the repository and the user can be retrieved")
-    public void save_addsUserToRepositoryAndCanBeRetrieved() {
-        User user = new User();
-        user.setUsername("testUser");
-        userRepository.save(user);
+    @DisplayName("Test that user is retrieved correctly by username")
+    void testFindByUsername() {
+        String username = "test_user";
 
-        Optional<User> retrievedUser = userRepository.findByUsername("testUser");
+        Optional<User> actualUser = userRepository.findByUsername(username);
 
-        assertThat(retrievedUser).isPresent();
-        assertThat(retrievedUser.get().getUsername()).isEqualTo("testUser");
+        assertThat(actualUser).isPresent();
+        assertThat(actualUser.get().getUsername()).isEqualTo(username);
     }
-
     /**
-     * This test verifies that the findByUsername method of UserRepositoryImpl returns an empty Optional
-     * when the user does not exist in the repository.
+     * This test checks that the save method correctly saves a user to the database.
+     * It saves a user to the database and then retrieves it using the findByUsername method.
+     * It asserts that the retrieved user is present and that its username matches the expected username.
      */
     @Test
-    @DisplayName("FindByUsername method returns an empty Optional if user does not exist")
-    public void findByUsername_returnsEmptyOptionalIfUserDoesNotExist() {
-        Optional<User> retrievedUser = userRepository.findByUsername("nonExistentUser");
+    @DisplayName("Test that user is saved correctly")
+    void testSave() {
+        String username = "testUser228";
+        User expectedUser = new User();
+        expectedUser.setUsername(username);
+        expectedUser.setPassword("testPass");
+        expectedUser.setSalt("testSalt");
 
-        assertThat(retrievedUser).isNotPresent();
+        userRepository.save(expectedUser);
+        Optional<User> actualUser = userRepository.findByUsername(username);
+
+        assertThat(actualUser).isPresent();
+        assertThat(actualUser.get().getUsername()).isEqualTo(expectedUser.getUsername());
+    }
+    /**
+     * This test checks that the findByUsername method correctly handles the case where the user does not exist.
+     * It attempts to retrieve a user with a username that does not exist in the database.
+     * It asserts that the returned user is not present.
+     */
+    @Test
+    @DisplayName("Test that non-existing user is not retrieved")
+    void testFindByUsername_whenUserDoesNotExist() {
+        Optional<User> actualUser = userRepository.findByUsername("nonExistingUser");
+
+        assertThat(actualUser).isNotPresent();
     }
 }

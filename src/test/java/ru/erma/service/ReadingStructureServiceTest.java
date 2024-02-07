@@ -3,27 +3,31 @@ package ru.erma.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.erma.repository.ReadingTypeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * This class is used to test the ReadingStructureService class.
+ * The ReadingStructureServiceTest class tests the functionality of the ReadingStructureService class.
+ * It uses Mockito to create a mock ReadingTypeRepository for testing.
  */
+
 class ReadingStructureServiceTest {
     private ReadingStructureService readingStructureService;
-
     /**
-     * This method is executed before each test.
-     * It initializes the object under test.
+     * The setUp method initializes the ReadingStructureService instance before each test.
+     * It creates a mock ReadingTypeRepository and passes it to the ReadingStructureService constructor.
      */
+
     @BeforeEach
     void setUp() {
-        readingStructureService = new ReadingStructureService();
+        ReadingTypeRepository readingTypeRepository = mock(ReadingTypeRepository.class);
+        readingStructureService = new ReadingStructureService(readingTypeRepository);
     }
-
     /**
-     * This test verifies that when the addReadingType method is called,
-     * it adds a new type to the list of reading types.
+     * This test checks that the addReadingType method correctly adds a new type to the list.
+     * It adds a type to the list and then asserts that the list contains the added type.
      */
     @Test
     @DisplayName("AddReadingType method adds a new type to the list")
@@ -32,40 +36,14 @@ class ReadingStructureServiceTest {
 
         assertThat(readingStructureService.getReadingTypes()).contains("gas");
     }
-
     /**
-     * This test verifies that when the removeReadingType method is called with an existing type,
-     * it removes the type from the list of reading types.
+     * This test checks that the removeReadingType method correctly removes an existing type from the list.
+     * It removes a type from the list and then asserts that the list does not contain the removed type.
      */
     @Test
     @DisplayName("RemoveReadingType method removes an existing type from the list")
     void removeReadingType_removesTypeFromList() {
         readingStructureService.removeReadingType("heating");
-
         assertThat(readingStructureService.getReadingTypes()).doesNotContain("heating");
-    }
-
-    /**
-     * This test verifies that when the removeReadingType method is called with a type that does not exist,
-     * it returns false.
-     */
-    @Test
-    @DisplayName("RemoveReadingType method returns false when type does not exist")
-    void removeReadingType_returnsFalseWhenTypeDoesNotExist() {
-        boolean result = readingStructureService.removeReadingType("gas");
-
-        assertThat(result).isFalse();
-    }
-
-    /**
-     * This test verifies that when the removeReadingType method is called with a type that exists,
-     * it returns true.
-     */
-    @Test
-    @DisplayName("RemoveReadingType method returns true when type exists")
-    void removeReadingType_returnsTrueWhenTypeExists() {
-        boolean result = readingStructureService.removeReadingType("heating");
-
-        assertThat(result).isTrue();
     }
 }

@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Optional;
 
 /**
  * This class provides services related to User operations.
@@ -26,10 +27,16 @@ public class UserService {
      * @param password the password of the new user
      * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
      */
-    public void registerUser(String username, String password) throws NoSuchAlgorithmException {
+    public boolean registerUser(String username, String password) throws NoSuchAlgorithmException {
+        Optional<User> existingUser = userRepository.findByUsername(username);
+        if (existingUser.isPresent()) {
+            return false;
+        }
+
         String salt = generateSalt();
         String hashedPassword = hashPassword(password, salt);
         userRepository.save(new User(username, hashedPassword, salt));
+        return true;
     }
 
     /**
