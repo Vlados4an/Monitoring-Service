@@ -1,7 +1,7 @@
 package ru.erma.repository.impl;
 
+
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.DatabaseException;
 import ru.erma.model.User;
 import ru.erma.repository.UserRepository;
 
@@ -30,7 +30,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      *
      * @param username the username to find the user record for.
      * @return an Optional containing the user record if found, or an empty Optional if not found.
-     * @throws DatabaseException if there is an error retrieving the user record.
+     * @throws RuntimeException if there is an error retrieving the user record.
      */
 
     @Override
@@ -45,7 +45,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to find user by username", e);
+            throw new RuntimeException("Failed to find user by username: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -55,13 +55,13 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      * If the user record is null, it throws a DatabaseException.
      *
      * @param user the user record to save.
-     * @throws DatabaseException if the user record is null.
+     * @throws RuntimeException if the user record is null.
      */
 
     @Override
     public void save(User user) {
-        String sql = "INSERT INTO develop.users(username,password,salt) VALUES (?,?,?)";
-        executeUpdate(sql, user.getUsername(), user.getPassword(), user.getSalt());
+        String sql = "INSERT INTO develop.users(username,password) VALUES (?,?)";
+        executeUpdate(sql, user.getUsername(), user.getPassword());
     }
 
     /**
@@ -77,11 +77,9 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
         User user = new User();
         String username = resultSet.getString("username");
         String password = resultSet.getString("password");
-        String salt = resultSet.getString("salt");
 
         user.setUsername(username);
         user.setPassword(password);
-        user.setSalt(salt);
         return user;
     }
 }
