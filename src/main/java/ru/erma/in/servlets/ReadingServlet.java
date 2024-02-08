@@ -19,16 +19,35 @@ import ru.erma.service.ReadingService;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * The ReadingServlet class extends the HttpServlet class and is used to handle HTTP requests related to reading operations.
+ * It is annotated with @WebServlet, which means it is automatically registered and mapped to the "/readings/*" URL pattern.
+ * It contains methods to handle GET and POST requests, as well as helper methods to show actual readings, show reading history, show readings for a specific month, and handle reading submission.
+ */
 @WebServlet({"/readings/*"})
 public class ReadingServlet extends HttpServlet {
     private ObjectMapper jacksonMapper;
     private ReadingService readingService;
+
+    /**
+     * This method is called by the servlet container to indicate to this servlet that the servlet is being placed into service.
+     * It initializes the ObjectMapper and ReadingService from the ServletContext.
+     */
     @Override
     public void init() {
         jacksonMapper = (ObjectMapper) getServletContext().getAttribute("jacksonMapper");
         readingService = (ReadingService) getServletContext().getAttribute("readingService");
     }
+
+    /**
+     * This method is called by the server (via the service method) to allow a servlet to handle a GET request.
+     * It checks the authentication status, validates the request path, and calls the appropriate helper method based on the path.
+     * It also handles exceptions and sends appropriate responses.
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @throws IOException if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Authentication authentication = (Authentication) getServletContext().getAttribute("authentication");
@@ -61,6 +80,16 @@ public class ReadingServlet extends HttpServlet {
         }
 
     }
+
+    /**
+     * This method is called by the server (via the service method) to allow a servlet to handle a POST request.
+     * It checks the request path and calls the handleReadingSubmission helper method if the path is "/submit".
+     * If the path is not "/submit", it sends a 404 Not Found error and an ExceptionResponse with the message "Endpoint not found".
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @throws IOException if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
@@ -71,6 +100,15 @@ public class ReadingServlet extends HttpServlet {
             jacksonMapper.writeValue(resp.getWriter(), new ExceptionResponse("Endpoint not found"));
         }
     }
+
+    /**
+     * This helper method is used to handle reading submission.
+     * It validates the username parameter, checks the authentication status, gets all audits from the AuditService, and sends a response with the audits.
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @throws IOException if an input or output error is detected when the servlet handles the request
+     */
     private void handleReadingSubmission(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Authentication authentication = (Authentication) getServletContext().getAttribute("authentication");
         if (authentication.isAuth()) {
@@ -99,6 +137,16 @@ public class ReadingServlet extends HttpServlet {
             jacksonMapper.writeValue(resp.getWriter(), new ExceptionResponse(authentication.getMessage()));
         }
     }
+
+    /**
+     * This helper method is used to show actual readings.
+     * It validates the username parameter, checks the authentication status, gets all audits from the AuditService, and sends a response with the audits.
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @param authentication an Authentication object that contains the authentication status of the user
+     * @throws IOException if an input or output error is detected when the servlet handles the request
+     */
     private void showActualReadingsProcess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
         String username = req.getParameter("username");
         if(username == null) throw new NotValidArgumentException("Username parameter is null");
@@ -107,6 +155,16 @@ public class ReadingServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         jacksonMapper.writeValue(resp.getWriter(), actualReading);
     }
+
+    /**
+     * This helper method is used to show reading history.
+     * It validates the username parameter, checks the authentication status, gets all audits from the AuditService, and sends a response with the audits.
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @param authentication an Authentication object that contains the authentication status of the user
+     * @throws IOException if an input or output error is detected when the servlet handles the request
+     */
     private void showReadingHistory(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
         String username = req.getParameter("username");
         if(username == null) throw new NotValidArgumentException("Username parameter is null");
@@ -115,6 +173,16 @@ public class ReadingServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         jacksonMapper.writeValue(resp.getWriter(), readingHistory);
     }
+
+    /**
+     * This helper method is used to show readings for a specific month.
+     * It validates the username parameter, checks the authentication status, gets all audits from the AuditService, and sends a response with the audits.
+     *
+     * @param req an HttpServletRequest object that contains the request the client has made of the servlet
+     * @param resp an HttpServletResponse object that contains the response the servlet sends to the client
+     * @param authentication an Authentication object that contains the authentication status of the user
+     * @throws IOException if an input or output error is detected when the servlet handles the request
+     */
     private void showReadingForMonth(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
         String username = req.getParameter("username");
         if(username == null) throw new NotValidArgumentException("Username parameter is null");
@@ -131,6 +199,4 @@ public class ReadingServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         jacksonMapper.writeValue(resp.getWriter(), readingsForMonth);
     }
-
-
 }

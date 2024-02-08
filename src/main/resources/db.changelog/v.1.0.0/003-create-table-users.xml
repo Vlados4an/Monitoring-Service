@@ -7,13 +7,13 @@
 
     <changeSet id="003-create-table-users" author="Vlados4an">
         <createTable schemaName="develop" tableName="users">
-            <column name="id" type="bigint" defaultValueComputed="nextval('develop.user_id_seq')">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.user_id_seq')" remarks="Primary key using 'develop.user_id_seq' sequence for unique ID generation.">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="username" type="varchar(255)">
+            <column name="username" type="varchar(255)" remarks="The username chosen by the user for login purposes, must be unique across the system.">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="password" type="varchar(255)">
+            <column name="password" type="varchar(255)" remarks="Hashed representation of the user's password, used for authentication.">
                 <constraints nullable="false"/>
             </column>
         </createTable>

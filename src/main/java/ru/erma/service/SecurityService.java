@@ -12,7 +12,8 @@ import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 /**
- * The type Security service.
+ * The SecurityService class provides services related to user authentication and registration.
+ * It uses a UserRepository to perform operations on User data and a JwtTokenProvider to create and validate JWT tokens.
  */
 public class SecurityService {
 
@@ -20,11 +21,27 @@ public class SecurityService {
 
     private final JwtTokenProvider tokenProvider;
 
+    /**
+     * Constructs a new SecurityService instance with the specified UserRepository and JwtTokenProvider.
+     *
+     * @param userRepository the UserRepository used to perform operations on User data
+     * @param tokenProvider the JwtTokenProvider used to create and validate JWT tokens
+     */
     public SecurityService(UserRepository<String, User> userRepository, JwtTokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
     }
 
+    /**
+     * Registers a new user with the specified username and password.
+     * If a user with the specified username already exists, it throws a RegisterException.
+     * After successfully registering the user, it returns the User object.
+     *
+     * @param username the username of the new user
+     * @param password the password of the new user
+     * @return the User object of the registered user
+     * @throws RegisterException if a user with the specified username already exists
+     */
     @Audit(action = "User registered: ")
     public User register(String username, String password) {
         Optional<User> user = userRepository.findByUsername(username);
@@ -40,6 +57,16 @@ public class SecurityService {
         return newPlayer;
     }
 
+    /**
+     * Authenticates a user with the specified username and password.
+     * If the user does not exist or the password is incorrect, it throws an AuthorizeException.
+     * After successfully authenticating the user, it creates an access token and a refresh token, and returns a JwtResponse with the tokens.
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     * @return a JwtResponse with the access token and refresh token
+     * @throws AuthorizeException if the user does not exist or the password is incorrect
+     */
     @Audit(action = "User authorized: ")
     public JwtResponse authorization(String username, String password) {
         Optional<User> optionalUser = userRepository.findByUsername(username);

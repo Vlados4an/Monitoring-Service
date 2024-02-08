@@ -10,6 +10,7 @@ import java.util.List;
  * @param <E> the type of the reading
  */
 public interface ReadingRepository<K,E> {
+
     /**
      * Saves the given reading for the specified username.
      *

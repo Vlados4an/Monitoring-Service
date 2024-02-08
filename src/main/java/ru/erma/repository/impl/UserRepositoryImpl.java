@@ -15,6 +15,7 @@ import java.util.Optional;
  * It provides methods to save and retrieve user records from the database.
  */
 public class UserRepositoryImpl extends AbstractRepository implements UserRepository<String, User> {
+
     /**
      * Constructs a new UserRepositoryImpl with the specified connection provider.
      *
@@ -23,6 +24,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
     public UserRepositoryImpl(DBConnectionProvider connectionProvider) {
         super(connectionProvider);
     }
+
     /**
      * Retrieves a user record for a specific username from the database.
      * It selects the row from the users table where the username matches the provided username.
@@ -32,10 +34,9 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      * @return an Optional containing the user record if found, or an empty Optional if not found.
      * @throws RuntimeException if there is an error retrieving the user record.
      */
-
     @Override
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT * FROM develop.users WHERE username = ?";
+        String sql = "SELECT username, password FROM develop.users WHERE username = ?";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
@@ -49,6 +50,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
         }
         return Optional.empty();
     }
+
     /**
      * Saves a user record to the database.
      * It inserts a new row into the users table with the username, password, and salt from the user record.
@@ -57,7 +59,6 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      * @param user the user record to save.
      * @throws RuntimeException if the user record is null.
      */
-
     @Override
     public void save(User user) {
         String sql = "INSERT INTO develop.users(username,password) VALUES (?,?)";
@@ -72,7 +73,6 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      * @return a User instance with the username, password, and salt from the result set.
      * @throws SQLException if there is an error getting the username, password, or salt from the result set.
      */
-
     private User getUserFromResultSet(ResultSet resultSet) throws SQLException {
         User user = new User();
         String username = resultSet.getString("username");

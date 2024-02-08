@@ -1,7 +1,6 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.NotValidArgumentException;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 
@@ -54,7 +53,7 @@ public class AuditRepositoryImpl extends AbstractRepository implements AuditRepo
     @Override
     public List<Audit> findAll() {
         List<Audit> audits = new ArrayList<>();
-        String sql = "SELECT * FROM develop.audits";
+        String sql = "SELECT id, action FROM develop.audits";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {

@@ -25,6 +25,11 @@ import ru.erma.util.PropertyLoader;
 
 import java.util.Properties;
 
+/**
+ * The ApplicationContextListener class implements the ServletContextListener interface and is used to initialize the application context.
+ * It is annotated with @WebListener, which means it is automatically registered and applied to every request in the application.
+ * It contains methods to handle context initialization and destruction, as well as helper methods to load properties, configure the database, and initialize the service context.
+ */
 @WebListener
 public class ApplicationContextListener implements ServletContextListener {
 
@@ -32,6 +37,10 @@ public class ApplicationContextListener implements ServletContextListener {
     private DBConnectionProvider connectionProvider;
     private PropertyLoader propertyLoader;
 
+    /**
+     * This method is called by the servlet container to indicate to this servlet that the servlet is being placed into service.
+     * It initializes the ObjectMapper, ReadingService, and AuditService from the ServletContext.
+     */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         final ServletContext servletContext = sce.getServletContext();
@@ -45,11 +54,21 @@ public class ApplicationContextListener implements ServletContextListener {
         servletContext.setAttribute("jacksonMapper", jacksonMapper);
     }
 
+    /**
+     * This method is called by the servlet container to indicate to a filter that it is being taken out of service.
+     * This method is only called once all threads within the filter's doFilter method have exited or after a timeout period has passed.
+     */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContextListener.super.contextDestroyed(sce);
     }
 
+    /**
+     * This helper method is used to configure the database.
+     * It initializes the DatabaseConfiguration, DBConnectionProvider, and DBMigrationService, and performs database migration.
+     *
+     * @param servletContext the ServletContext object that contains the servlet context
+     */
     private void databaseConfiguration(ServletContext servletContext) {
         DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration(propertyLoader);
 
@@ -60,6 +79,13 @@ public class ApplicationContextListener implements ServletContextListener {
         migrationService.migration();
         servletContext.setAttribute("migrationService", migrationService);
     }
+
+    /**
+     * This helper method is used to initialize the service context.
+     * It initializes the UserRepository, ReadingRepository, ReadingTypeRepository, AuditRepository, ReadingStructureService, UserService, ReadingService, AuditService, JwtTokenProvider, and SecurityService, and sets them in the ServletContext.
+     *
+     * @param servletContext the ServletContext object that contains the servlet context
+     */
     private void serviceContextInit(ServletContext servletContext) {
 
         UserRepository<String, User> userRepository = new UserRepositoryImpl(connectionProvider);
@@ -91,6 +117,12 @@ public class ApplicationContextListener implements ServletContextListener {
         servletContext.setAttribute("auditService",auditService);
     }
 
+    /**
+     * This helper method is used to load properties.
+     * It initializes the PropertyLoader, loads the properties, and sets them in the ServletContext.
+     *
+     * @param servletContext the ServletContext object that contains the servlet context
+     */
     private void loadProperties(ServletContext servletContext) {
         String filePath = "application.properties";
         propertyLoader = new PropertyLoader(filePath);

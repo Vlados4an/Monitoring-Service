@@ -11,14 +11,21 @@ import java.util.Properties;
 public class DatabaseConfiguration {
     private final Properties properties;
 
+    /**
+     * Constructs a new DatabaseConfiguration instance.
+     * The constructor takes a PropertyLoader as a parameter, which is used to load the properties from a file.
+     *
+     * @param propertyLoader the PropertyLoader used to load the properties
+     */
     public DatabaseConfiguration(PropertyLoader propertyLoader) {
         properties = propertyLoader.getProperties();
     }
 
     /**
      * Configures and returns a DBConnectionProvider instance using the properties loaded from the file.
+     * The DBConnectionProvider is configured with the database URL, username, and password from the properties file.
      *
-     * @return a DBConnectionProvider instance configured with the database URL, username, and password from the properties file.
+     * @return a DBConnectionProvider instance configured with the database URL, username, and password from the properties file
      */
     public DBConnectionProvider getConnectionProvider() {
         String dbUrl = properties.getProperty("db.url");
@@ -31,6 +38,9 @@ public class DatabaseConfiguration {
     /**
      * Performs a database migration using the properties loaded from the file.
      * It creates a DBMigrationService instance and calls its migration method.
+     * The DBMigrationService is configured with the schema name and change log file path from the properties file.
+     *
+     * @return a DBMigrationService instance configured with the schema name and change log file path from the properties file
      */
     public DBMigrationService getMigrationService() {
         String changeLogFile = properties.getProperty("liquibase.changeLogFile");
