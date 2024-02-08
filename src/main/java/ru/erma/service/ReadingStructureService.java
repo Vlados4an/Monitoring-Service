@@ -1,6 +1,7 @@
 package ru.erma.service;
 
 import ru.erma.aop.annotations.Audit;
+import ru.erma.exception.NotValidArgumentException;
 import ru.erma.repository.ReadingTypeRepository;
 
 import java.util.ArrayList;
@@ -35,6 +36,9 @@ public class ReadingStructureService {
      */
     @Audit(action = "Admin added new reading type: ")
     public void addReadingType(String type) {
+        if (readingTypes.contains(type)) {
+            throw new NotValidArgumentException("Reading type " + type + " already exists.");
+        }
         readingTypes.add(type);
         readingTypeRepository.addColumnToReadingsTable(type);
     }
