@@ -8,13 +8,11 @@
     <changeSet id="006-insert-initial-data-users" author="Vlados4an">
         <insert tableName="users" schemaName="develop">
             <column name="username" value="admin"/>
-            <column name="password" value="xPVKnAhAFA3EDcLilgSCnfTb8qu8bwQwyuXnobNMt84="/>
-            <column name="salt" value="TnoOIg2VolvLnJG+l8V1xQ=="/>
+            <column name="password" value="admin"/>
         </insert>
         <insert tableName="users" schemaName="develop">
             <column name="username" value="test_user"/>
-            <column name="password" value="8shIxuFH0qPOrDVK/7rCeJQtTadA94jWvoP3hDNjO+Q="/>
-            <column name="salt" value="8Z72iVxEJC+FJsCn/H025g=="/>
+            <column name="password" value="test_pass"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

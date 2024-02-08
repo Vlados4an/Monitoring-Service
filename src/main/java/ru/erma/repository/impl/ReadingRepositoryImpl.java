@@ -1,7 +1,7 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.DatabaseException;
+import ru.erma.exception.NotValidArgumentException;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
 
@@ -30,13 +30,10 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
      *
      * @param username the username associated with the reading.
      * @param reading the reading record to save.
-     * @throws DatabaseException if the reading record is null.
+     * @throws RuntimeException if the reading record is null.
      */
     @Override
     public void save(String username, Reading reading) {
-        if (reading == null) {
-            throw new DatabaseException("Reading cannot be null",new NullPointerException());
-        }
         StringBuilder sql = new StringBuilder("INSERT INTO develop.readings (username, month, year");
         StringBuilder values = new StringBuilder(" VALUES (?, ?, ?");
         Map<String, Integer> readingValues = reading.getValues();
@@ -60,7 +57,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
      *
      * @param username the username to find reading records for.
      * @return a list of all reading records for the specified username from the database.
-     * @throws DatabaseException if there is an error retrieving the reading records.
+     * @throws RuntimeException if there is an error retrieving the reading records.
      */
     @Override
     public List<Reading> findByUsername(String username) {
@@ -72,7 +69,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
                 return getReadingsFromResultSet(resultSet);
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to find readings by username", e);
+            throw new RuntimeException("Failed to find readings by username: " + e.getMessage());
         }
     }
     /**
@@ -84,7 +81,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
      * @param month the month to find reading records for.
      * @param year the year to find reading records for.
      * @return a list of all reading records for the specified username, month, and year from the database.
-     * @throws DatabaseException if there is an error retrieving the reading records.
+     * @throws RuntimeException if there is an error retrieving the reading records.
      */
     @Override
     public List<Reading> findByUsernameAndMonthAndYear(String username, int month, int year) {
@@ -98,7 +95,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
                 return getReadingsFromResultSet(resultSet);
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to find readings by username, month and year", e);
+            throw new RuntimeException("Failed to find readings by username, month and year" + e.getMessage());
         }
     }
     /**
@@ -108,7 +105,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
      *
      * @param resultSet the result set.
      * @return a list of Reading instances.
-     * @throws DatabaseException if there is an error creating the Reading instances.
+     * @throws RuntimeException if there is an error creating the Reading instances.
      */
     private List<Reading> getReadingsFromResultSet(ResultSet resultSet) {
         List<Reading> readings = new ArrayList<>();
@@ -118,7 +115,7 @@ public class ReadingRepositoryImpl extends AbstractRepository implements Reading
                 readings.add(reading);
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to get readings from result set", e);
+            throw new RuntimeException("Failed to get readings from result set" + e.getMessage());
         }
         return readings;
     }
