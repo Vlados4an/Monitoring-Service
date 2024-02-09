@@ -10,8 +10,11 @@ package ru.erma.in.security;
  */
 public class Authentication {
     private String username;
+
     private boolean isAuth;
+
     private String message;
+
 
     public Authentication() {
     }

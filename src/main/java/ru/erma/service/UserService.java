@@ -1,7 +1,6 @@
 package ru.erma.service;
 
 import ru.erma.aop.annotations.Loggable;
-import ru.erma.exception.AuthorizeException;
 import ru.erma.exception.UserNotFoundException;
 import ru.erma.model.User;
 import ru.erma.repository.UserRepository;

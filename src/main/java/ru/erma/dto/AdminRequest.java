@@ -7,5 +7,5 @@ package ru.erma.dto;
  * The username field represents the username of the admin making the request.
  * The type field represents the type of reading to be added by the admin.
  */
-public record AdminRequest(String username,String type) {
+public record AdminRequest(String username, String type) {
 }

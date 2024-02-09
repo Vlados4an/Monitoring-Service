@@ -14,6 +14,7 @@ import java.io.IOException;
 public class JwtTokenFilter implements Filter {
 
     private JwtTokenProvider jwtTokenProvider;
+
     private ServletContext servletContext;
 
     /**

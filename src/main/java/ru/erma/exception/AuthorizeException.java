@@ -8,6 +8,7 @@ package ru.erma.exception;
  * The message represents the detail message of the exception, which is saved for later retrieval by the Throwable.getMessage() method.
  */
 public class AuthorizeException extends RuntimeException {
+
     /**
      * Constructs a new AuthorizeException with the specified detail message.
      *

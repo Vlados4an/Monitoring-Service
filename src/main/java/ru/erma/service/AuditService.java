@@ -37,6 +37,7 @@ public class AuditService {
      *
      * @return a list of all Audit objects
      */
+    @ru.erma.aop.annotations.Audit(action = "Admin viewed all audits")
     public List<Audit> getAllAudits(){
         return auditRepository.findAll();
     }

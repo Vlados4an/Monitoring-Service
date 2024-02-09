@@ -87,7 +87,6 @@ public class ApplicationContextListener implements ServletContextListener {
      * @param servletContext the ServletContext object that contains the servlet context
      */
     private void serviceContextInit(ServletContext servletContext) {
-
         UserRepository<String, User> userRepository = new UserRepositoryImpl(connectionProvider);
         ReadingRepository<String, Reading> readingRepository = new ReadingRepositoryImpl(connectionProvider);
         ReadingTypeRepository<String> readingTypeRepository = new ReadingTypeRepositoryImpl(connectionProvider);
@@ -98,7 +97,6 @@ public class ApplicationContextListener implements ServletContextListener {
         ReadingService readingService = new ReadingService(readingRepository,readingStructureService);
         AuditService auditService = new AuditService(auditRepository);
 
-
         JwtTokenProvider tokenProvider = new JwtTokenProvider(
                 properties.getProperty("jwt.secret"),
                 Long.parseLong(properties.getProperty("jwt.access")),
@@ -107,7 +105,6 @@ public class ApplicationContextListener implements ServletContextListener {
         );
 
         SecurityService securityService = new SecurityService(userRepository, tokenProvider);
-
 
         servletContext.setAttribute("tokenProvider", tokenProvider);
         servletContext.setAttribute("securityService", securityService);

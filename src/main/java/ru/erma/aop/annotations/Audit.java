@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Audit {
+
     /**
      * The action that will be audited. Defaults to an empty string if not specified.
      * @return the audit action

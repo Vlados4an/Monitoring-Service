@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class Audit {
     Long id;
+
     private final List<String> audits;
     /**
      * Default constructor for the Audit class.

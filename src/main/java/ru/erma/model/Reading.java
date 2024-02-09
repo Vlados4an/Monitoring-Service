@@ -8,11 +8,13 @@ import java.util.Map;
  */
 public class Reading {
     private Integer month;
+
     private Integer year;
+
     private Map<String,Integer> values;
 
-    public Reading() {
-    }
+
+    public Reading() {}
 
     public Integer getMonth() {
         return month;

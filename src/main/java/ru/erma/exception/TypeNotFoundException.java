@@ -8,6 +8,7 @@ package ru.erma.exception;
  * The message represents the detail message of the exception, which is saved for later retrieval by the Throwable.getMessage() method.
  */
 public class TypeNotFoundException extends RuntimeException{
+
     /**
      * Constructs a new TypeNotFoundException with the specified detail message.
      *

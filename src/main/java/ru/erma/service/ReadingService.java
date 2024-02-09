@@ -67,7 +67,7 @@ public class ReadingService {
      * @return a list of readings for the specified username, month, and year
      */
     @Audit(action = "User viewed readings for month: ")
-    public List<Reading> getReadingsForMonth(String username,Integer month,Integer year){
+    public List<Reading> getReadingsForMonth(String username, Integer month, Integer year){
         List<Reading> userReadings = readingRepository.findByUsernameAndMonthAndYear(username, month, year);
         if (userReadings == null || userReadings.isEmpty()) {
             throw new ReadingNotFoundException("No readings found for user with username " + username + " for month " + month + " and year " + year);

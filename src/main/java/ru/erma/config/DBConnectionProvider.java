@@ -11,7 +11,9 @@ import java.sql.DriverManager;
  */
 public class DBConnectionProvider {
     private final String url;
+
     private final String username;
+
     private final String password;
 
     /**

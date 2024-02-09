@@ -53,7 +53,7 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
 
     /**
      * Saves a user record to the database.
-     * It inserts a new row into the users table with the username, password, and salt from the user record.
+     * It inserts a new row into the users table with the username, password from the user record.
      * If the user record is null, it throws a DatabaseException.
      *
      * @param user the user record to save.
@@ -70,13 +70,13 @@ public class UserRepositoryImpl extends AbstractRepository implements UserReposi
      * It gets the username, password, and salt from the result set and sets them in the User instance.
      *
      * @param resultSet the result set.
-     * @return a User instance with the username, password, and salt from the result set.
-     * @throws SQLException if there is an error getting the username, password, or salt from the result set.
+     * @return a User instance with the username, password from the result set.
+     * @throws SQLException if there is an error getting the username or password from the result set.
      */
     private User getUserFromResultSet(ResultSet resultSet) throws SQLException {
         User user = new User();
         String username = resultSet.getString("username");
-        String password = resultSet.getString("password");
+        byte[] password = resultSet.getBytes("password");
 
         user.setUsername(username);
         user.setPassword(password);

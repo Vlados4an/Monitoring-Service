@@ -15,7 +15,9 @@ import java.sql.Statement;
 public class DBMigrationService {
 
     private final DBConnectionProvider connectionProvider;
+
     private final String schemaName;
+
     private final String changeLogFile;
 
     /**
