@@ -199,4 +199,12 @@ public class ReadingServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         jacksonMapper.writeValue(resp.getWriter(), readingsForMonth);
     }
+
+    public void setJacksonMapper(ObjectMapper jacksonMapper) {
+        this.jacksonMapper = jacksonMapper;
+    }
+
+    public void setReadingService(ReadingService readingService) {
+        this.readingService = readingService;
+    }
 }

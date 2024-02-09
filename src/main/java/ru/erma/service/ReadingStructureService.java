@@ -15,6 +15,7 @@ import java.util.List;
 public class ReadingStructureService {
 
     private final ReadingTypeRepository<String> readingTypeRepository;
+
     private List<String> readingTypes = new ArrayList<>();
 
     /**

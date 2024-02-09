@@ -49,10 +49,10 @@ public class RegistrationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try(ServletInputStream inputStream = req.getInputStream()) {
             SecurityDTO securityDTO = jacksonMapper.readValue(inputStream, SecurityDTO.class);
-            User registered = securityService.register(securityDTO.username(), securityDTO.password());
+            User registered = securityService.register(securityDTO);
 
             resp.setStatus(HttpServletResponse.SC_CREATED);
-            jacksonMapper.writeValue(resp.getWriter(), new SuccessResponse("Player with username " + registered.getUsername() + " successfully created."));
+            jacksonMapper.writeValue(resp.getWriter(), new SuccessResponse("User with username " + registered.getUsername() + " successfully created."));
         } catch (RegisterException | JsonParseException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             jacksonMapper.writeValue(resp.getWriter(), new ExceptionResponse(e.getMessage()));

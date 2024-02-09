@@ -11,6 +11,7 @@ import java.sql.SQLException;
  * It provides a method to execute SQL update statements.
  */
 public abstract class AbstractRepository {
+
     protected final DBConnectionProvider connectionProvider;
 
     protected AbstractRepository(DBConnectionProvider connectionProvider) {

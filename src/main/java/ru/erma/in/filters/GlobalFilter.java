@@ -11,6 +11,7 @@ import java.io.IOException;
  */
 @WebFilter
 public class GlobalFilter implements Filter {
+
     /**
      * This method is called by the container each time a request/response pair is passed through the chain due to a client request for a resource at the end of the chain.
      * It sets the character encoding of the request to UTF-8 and the content type of the response to application/json with a charset of UTF-8.

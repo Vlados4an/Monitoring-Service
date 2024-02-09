@@ -50,7 +50,7 @@ public class LoginServlet extends HttpServlet {
         try (ServletInputStream inputStream = req.getInputStream()) {
             SecurityDTO securityDTO = jacksonMapper.readValue(inputStream, SecurityDTO.class);
 
-            JwtResponse response = securityService.authorization(securityDTO.username(), securityDTO.password());
+            JwtResponse response = securityService.authorization(securityDTO);
 
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
             jacksonMapper.writeValue(resp.getWriter(), response);

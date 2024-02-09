@@ -8,11 +8,13 @@ import java.util.List;
  */
 public class User {
     private String username;
-    private String password;
+
+    private byte[] password;
+
     private List<Reading> readings;
 
-    public User() {
-    }
+
+    public User() {}
 
     public String getUsername() {
         return username;
@@ -22,11 +24,11 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
+    public byte[] getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(byte[] password) {
         this.password = password;
     }
 

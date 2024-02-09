@@ -11,6 +11,6 @@ import java.util.Map;
  * The year field represents the year for which the reading data is requested.
  * The values field represents a map of reading types and their corresponding values.
  */
-public record ReadingRequest(String username,Integer month,Integer year,Map<String,Integer> values) {
+public record ReadingRequest(String username, Integer month, Integer year, Map<String,Integer> values) {
 
 }

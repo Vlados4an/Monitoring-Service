@@ -188,4 +188,16 @@ public class AdminServlet extends HttpServlet {
             throw new TypeNotFoundException("Reading type not found");
         }
     }
+
+    public void setJacksonMapper(ObjectMapper jacksonMapper) {
+        this.jacksonMapper = jacksonMapper;
+    }
+
+    public void setReadingService(ReadingStructureService readingService) {
+        this.readingService = readingService;
+    }
+
+    public void setAuditService(AuditService auditService) {
+        this.auditService = auditService;
+    }
 }

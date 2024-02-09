@@ -7,6 +7,7 @@ package ru.erma.exception;
  * The message represents the detail message of the exception, which is saved for later retrieval by the Throwable.getMessage() method.
  */
 public class ReadingAlreadyExistsException extends RuntimeException{
+
     /**
      * Constructs a new ReadingAlreadyExistsException with the specified detail message.
      *

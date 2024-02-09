@@ -4,11 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.ServletException;
 import ru.erma.service.UserService;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.Date;
 
@@ -19,8 +17,11 @@ import java.util.Date;
  */
 public class JwtTokenProvider {
     private final Long access;
+
     private final Long refresh;
+
     private final UserService userService;
+
     private final SecretKey secretKey;
 
     /**
@@ -37,44 +38,6 @@ public class JwtTokenProvider {
         this.refresh = refresh;
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
         this.userService = userService;
-    }
-
-    /**
-     * Creates and returns an access token for the specified login.
-     * The token is signed with the secret key and has an expiration time based on the access token duration.
-     *
-     * @param login the login for which the access token is created
-     * @return the created access token
-     */
-    public String createAccessToken(String login) {
-        Claims claims = Jwts.claims().subject(login).build();
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + access);
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(now)
-                .expiration(validity)
-                .signWith(secretKey)
-                .compact();
-    }
-
-    /**
-     * Creates and returns a refresh token for the specified login.
-     * The token is signed with the secret key and has an expiration time based on the refresh token duration.
-     *
-     * @param login the login for which the refresh token is created
-     * @return the created refresh token
-     */
-    public String createRefreshToken(String login) {
-        Claims claims = Jwts.claims().subject(login).build();
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + refresh);
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(now)
-                .expiration(validity)
-                .signWith(secretKey)
-                .compact();
     }
 
     /**
@@ -127,5 +90,51 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token);
 
         return !claims.getPayload().getExpiration().before(new Date());
+    }
+
+    /**
+     * Creates and returns an access token for the specified login.
+     * The token is signed with the secret key and has an expiration time based on the access token duration.
+     * This method calls the private method createToken, passing the login and the access token duration.
+     *
+     * @param login the login for which the access token is created
+     * @return the created access token
+     */
+    public String createAccessToken(String login) {
+        return createToken(login, access);
+    }
+
+    /**
+     * Creates and returns a refresh token for the specified login.
+     * The token is signed with the secret key and has an expiration time based on the refresh token duration.
+     * This method calls the private method createToken, passing the login and the refresh token duration.
+     *
+     * @param login the login for which the refresh token is created
+     * @return the created refresh token
+     */
+    public String createRefreshToken(String login) {
+        return createToken(login, refresh);
+    }
+
+    /**
+     * Creates and returns a JWT token for the specified login and duration.
+     * The token is signed with the secret key and has an expiration time based on the provided duration.
+     * The token's claims include the subject (set to the provided login), the issued-at date (set to the current time),
+     * and the expiration date (set to the current time plus the provided duration).
+     *
+     * @param login the login for which the token is created
+     * @param duration the duration of the token in milliseconds
+     * @return the created token
+     */
+    private String createToken(String login, Long duration) {
+        Claims claims = Jwts.claims().subject(login).build();
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + duration);
+        return Jwts.builder()
+                .claims(claims)
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(secretKey)
+                .compact();
     }
 }
