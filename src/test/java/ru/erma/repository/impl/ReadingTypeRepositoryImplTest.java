@@ -3,8 +3,6 @@ package ru.erma.repository.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.erma.repository.impl.AbstractRepositoryForTest;
-import ru.erma.repository.impl.ReadingTypeRepositoryImpl;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

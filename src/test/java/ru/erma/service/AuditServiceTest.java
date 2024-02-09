@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.erma.exception.NotValidArgumentException;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
-import ru.erma.service.AuditService;
 
 import java.util.Arrays;
 import java.util.List;
