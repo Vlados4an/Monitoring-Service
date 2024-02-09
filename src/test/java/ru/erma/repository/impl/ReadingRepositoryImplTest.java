@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Reading;
-import ru.erma.repository.impl.AbstractRepositoryForTest;
-import ru.erma.repository.impl.ReadingRepositoryImpl;
 
 import java.util.HashMap;
 import java.util.List;

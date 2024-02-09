@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Audit;
-import ru.erma.repository.impl.AbstractRepositoryForTest;
-import ru.erma.repository.impl.AuditRepositoryImpl;
 
 import java.util.List;
 

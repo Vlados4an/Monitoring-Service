@@ -11,8 +11,6 @@ import ru.erma.exception.NotValidArgumentException;
 import ru.erma.exception.ReadingNotFoundException;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
-import ru.erma.service.ReadingService;
-import ru.erma.service.ReadingStructureService;
 
 import java.util.Arrays;
 import java.util.HashMap;
