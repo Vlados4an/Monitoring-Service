@@ -1,8 +1,6 @@
 package ru.erma.repository.impl;
 
-import lombok.RequiredArgsConstructor;
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,9 +10,13 @@ import java.sql.SQLException;
  * The AbstractRepository class provides a base for all repository classes.
  * It provides a method to execute SQL update statements.
  */
-@RequiredArgsConstructor
 public abstract class AbstractRepository {
+
     protected final DBConnectionProvider connectionProvider;
+
+    protected AbstractRepository(DBConnectionProvider connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
 
     /**
      * Executes an SQL update statement.
@@ -23,15 +25,15 @@ public abstract class AbstractRepository {
      *
      * @param sql the SQL statement to execute.
      * @param parameters the parameters to set in the SQL statement.
-     * @throws DatabaseException if there is an error executing the update.
+     * @throws RuntimeException if there is an error executing the update.
      */
-    protected void executeUpdate(String sql,Object... parameters){
+    protected void executeUpdate(String sql, Object... parameters){
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             setParameters(statement, parameters);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to execute update", e);
+            throw new RuntimeException("Failed to execute update: " + e.getMessage());
         }
     }
 

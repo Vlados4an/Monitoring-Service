@@ -10,6 +10,7 @@ import java.util.Optional;
  * @param <E> the type of the user
  */
 public interface UserRepository<K,E> {
+
     /**
      * Finds a user by the specified username.
      *

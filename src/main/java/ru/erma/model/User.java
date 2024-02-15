@@ -1,37 +1,42 @@
 package ru.erma.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Default constructor for the AuditLog class.
- * Initializes the list of log entries.
+ * The User class represents users in the system.
+ * Each user has a username, password and a list of readings.
  */
-@Getter
-@Setter
-@NoArgsConstructor
 public class User {
     private String username;
-    private String password;
-    private String salt;
+
+    private byte[] password;
+
     private List<Reading> readings;
 
-    /**
-     * Constructor for the User class.
-     * Initializes the username, password, and salt.
-     *
-     * @param username the username of the user
-     * @param password the hashed password of the user
-     * @param salt the salt used for password hashing
-     */
-    public User(String username, String password, String salt) {
+
+    public User() {}
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
         this.username = username;
+    }
+
+    public byte[] getPassword() {
+        return password;
+    }
+
+    public void setPassword(byte[] password) {
         this.password = password;
-        this.salt = salt;
-        this.readings = new ArrayList<>();
+    }
+
+    public List<Reading> getReadings() {
+        return readings;
+    }
+
+    public void setReadings(List<Reading> readings) {
+        this.readings = readings;
     }
 }

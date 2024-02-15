@@ -3,7 +3,6 @@ package ru.erma.config;
 import liquibase.command.CommandScope;
 import liquibase.command.core.UpdateCommandStep;
 import liquibase.exception.CommandExecutionException;
-import ru.erma.exception.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,7 +15,9 @@ import java.sql.Statement;
 public class DBMigrationService {
 
     private final DBConnectionProvider connectionProvider;
+
     private final String schemaName;
+
     private final String changeLogFile;
 
     /**
@@ -46,15 +47,15 @@ public class DBMigrationService {
                 new CommandScope(UpdateCommandStep.COMMAND_NAME)
                         .addArgumentValue("defaultSchemaName",schemaName)
                         .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG,changeLogFile)
-                        .addArgumentValue("url", connectionProvider.url())
-                        .addArgumentValue("username", connectionProvider.username())
-                        .addArgumentValue("password", connectionProvider.password())
+                        .addArgumentValue("url", connectionProvider.getUrl())
+                        .addArgumentValue("username", connectionProvider.getUsername())
+                        .addArgumentValue("password", connectionProvider.getPassword())
                         .execute();
             } catch (CommandExecutionException e) {
-                System.out.println("Error running update: "+e.getMessage());
+                throw new RuntimeException("Error running update: " + e.getMessage());
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to execute update",e);
+            throw new RuntimeException("Failed to execute update: " + e.getMessage());
         }
     }
 

@@ -1,7 +1,6 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.DatabaseException;
 import ru.erma.repository.ReadingTypeRepository;
 
 import java.sql.Connection;
@@ -55,7 +54,7 @@ public class ReadingTypeRepositoryImpl extends AbstractRepository implements Rea
      * If there is an error getting the column names, it throws a DatabaseException.
      *
      * @return a list of the reading types.
-     * @throws DatabaseException if there is an error getting the column names.
+     * @throws RuntimeException if there is an error getting the column names.
      */
     public List<String> getReadingTypesFromDatabase() {
         List<String> readingTypes = new ArrayList<>();
@@ -69,7 +68,7 @@ public class ReadingTypeRepositoryImpl extends AbstractRepository implements Rea
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to get reading types from database", e);
+            throw new RuntimeException("Failed to get reading types from database: " + e.getMessage());
         }
         return readingTypes;
     }

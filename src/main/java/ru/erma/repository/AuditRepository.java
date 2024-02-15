@@ -9,6 +9,7 @@ import java.util.List;
  * @param <E> the type of the audit
  */
 public interface AuditRepository<E> {
+
     /**
      * Saves the given audit.
      *

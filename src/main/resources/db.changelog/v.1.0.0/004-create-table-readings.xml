@@ -7,25 +7,25 @@
 
     <changeSet id="004-create-table-readings" author="Vlados4an">
         <createTable schemaName="develop" tableName="readings">
-            <column name="id" type="bigint" defaultValueComputed="nextval('develop.reading_id_seq')">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.reading_id_seq')" remarks="Primary key using 'develop.reading_id_seq' sequence for unique ID generation.">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="username" type="varchar(255)">
+            <column name="username" type="varchar(255)" remarks = "Foreign key linking to the username of the associated user in the users table.">
                 <constraints nullable="false" foreignKeyName="fk_reading_user" references="develop.users(username)"/>
             </column>
-            <column name="month" type="int">
+            <column name="month" type="int" remarks="Month component of the reading period, stored as integer.">
                 <constraints nullable="false"/>
             </column>
-            <column name="year" type="int">
+            <column name="year" type="int" remarks="Year component of the reading period, stored as integer.">
                 <constraints nullable="false"/>
             </column>
-            <column name="heating" type="double">
+            <column name="heating" type="double" remarks="Measurement of heating usage for the given period.">
                 <constraints nullable="true"/>
             </column>
-            <column name="cold_water" type="double">
+            <column name="cold_water" type="double" remarks="Measurement of cold water usage for the given period.">
                 <constraints nullable="true"/>
             </column>
-            <column name="hot_water" type="double">
+            <column name="hot_water" type="double" remarks="Measurement of hot water usage for the given period.">
                 <constraints nullable="true"/>
             </column>
         </createTable>
