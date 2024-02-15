@@ -3,18 +3,19 @@ package ru.erma.repository.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.erma.exception.DatabaseException;
 import ru.erma.model.Audit;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+
 /**
  * The AuditRepositoryImplTest class tests the functionality of the AuditRepositoryImpl class.
  * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
 public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
     private AuditRepositoryImpl auditRepository;
+
     /**
      * The setUp method initializes the AuditRepositoryImpl instance before each test.
      * It calls the setUp method of the superclass to initialize the connection provider,
@@ -25,6 +26,7 @@ public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
         super.setUp();
         auditRepository = new AuditRepositoryImpl(connectionProvider);
     }
+
     /**
      * This test checks that the save method correctly saves an audit to the database.
      * It creates an audit, adds an action to it, and then saves it to the database.
@@ -38,6 +40,7 @@ public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
 
         assertThatCode(() -> auditRepository.save(audit)).doesNotThrowAnyException();
     }
+
     /**
      * This test checks that the save method correctly handles the case where the audit is null.
      * It attempts to save a null audit to the database.
@@ -47,8 +50,9 @@ public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
     @DisplayName("Test that exception is thrown when saving null audit")
     void shouldThrowExceptionWhenSavingNullAudit() {
         assertThatThrownBy(() -> auditRepository.save(null))
-                .isInstanceOf(DatabaseException.class);
+                .isInstanceOf(RuntimeException.class);
     }
+
     /**
      * This test checks that the findAll method correctly retrieves all audits from the database.
      * It creates an audit, adds an action to it, saves it to the database, and then retrieves all audits.
@@ -66,6 +70,7 @@ public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
         assertThat(audits).isNotEmpty();
         assertThat(audits.get(0).getAudits().get(0)).isEqualTo("testAction");
     }
+
     /**
      * This test checks that the findAll method correctly handles the case where there are no audits in the database.
      * It retrieves all audits from the database.

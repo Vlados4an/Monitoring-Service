@@ -5,14 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import ru.erma.exception.NotValidArgumentException;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +47,17 @@ class AuditServiceTest {
         String action = "testAction";
         auditService.logAction(action);
         verify(auditRepository,times(1)).save(any(Audit.class));
+    }
+
+    /**
+     * This test verifies that when the logAction method saves null,
+     * it throws NotValidArgumentException.
+     */
+    @Test
+    @DisplayName("Test that exception is thrown when saving null audit")
+    void logNullAction_throwsNotValidArgumentException() {
+        assertThatThrownBy(() -> auditService.logAction(null))
+                .isInstanceOf(NotValidArgumentException.class);
     }
 
     /**

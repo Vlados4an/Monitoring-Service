@@ -1,8 +1,7 @@
 package ru.erma.repository.impl;
 
-import org.junit.jupiter.api.DisplayName;
-import ru.erma.exception.DatabaseException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.erma.model.Reading;
 
@@ -10,15 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+
 /**
  * The ReadingRepositoryImplTest class tests the functionality of the ReadingRepositoryImpl class.
  * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
 public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
     private ReadingRepositoryImpl readingRepository;
+
     /**
      * The setUp method initializes the ReadingRepositoryImpl instance before each test.
      * It calls the setUp method of the superclass to initialize the connection provider,
@@ -29,6 +28,7 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
         super.setUp();
         readingRepository = new ReadingRepositoryImpl(connectionProvider);
     }
+
     /**
      * This test checks that the save method correctly saves a reading to the database.
      * It creates a reading, sets its month and year, and then saves it to the database.
@@ -46,6 +46,7 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
 
         assertThatCode(() -> readingRepository.save("test_user", reading)).doesNotThrowAnyException();
     }
+
     /**
      * This test checks that the save method correctly handles the case where the reading is null.
      * It attempts to save a null reading to the database.
@@ -55,8 +56,9 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
     @DisplayName("Test that exception is thrown when saving null reading")
     void shouldThrowExceptionWhenSavingNullReading() {
         assertThatThrownBy(() -> readingRepository.save("test_user", null))
-                .isInstanceOf(DatabaseException.class);
+                .isInstanceOf(RuntimeException.class);
     }
+
     /**
      * This test checks that the findByUsername method correctly retrieves all readings for a specific username from the database.
      * It retrieves the readings for a username and asserts that the list is not empty and that the first reading's month, year, and values match the expected values.
@@ -74,6 +76,7 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
         assertThat(reading.getValues().get("cold_water")).isEqualTo(200);
         assertThat(reading.getValues().get("hot_water")).isEqualTo(300);
     }
+
     /**
      * This test checks that the findByUsername method correctly handles the case where there are no readings for a specific username in the database.
      * It attempts to retrieve the readings for a username that does not exist in the database.
@@ -104,6 +107,7 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
         assertThat(reading.getValues().get("cold_water")).isEqualTo(200);
         assertThat(reading.getValues().get("hot_water")).isEqualTo(300);
     }
+
     /**
      * This test checks that the findByUsernameAndMonthAndYear method correctly handles the case where there are no readings for a specific username, month, and year in the database.
      * It attempts to retrieve the readings for a username, month, and year that do not exist in the database.

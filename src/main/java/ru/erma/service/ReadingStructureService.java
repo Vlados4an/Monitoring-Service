@@ -1,6 +1,7 @@
 package ru.erma.service;
 
-import lombok.Getter;
+import ru.erma.aop.annotations.Audit;
+import ru.erma.exception.NotValidArgumentException;
 import ru.erma.repository.ReadingTypeRepository;
 
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ import java.util.List;
  * It uses a ReadingTypeRepository to add and remove reading types, and to get the reading types from the database.
  * It maintains a list of the current reading types.
  */
-@Getter
 public class ReadingStructureService {
 
     private final ReadingTypeRepository<String> readingTypeRepository;
+
     private List<String> readingTypes = new ArrayList<>();
 
     /**
@@ -34,7 +35,11 @@ public class ReadingStructureService {
      *
      * @param type the reading type to add.
      */
+    @Audit(action = "Admin added new reading type: ")
     public void addReadingType(String type) {
+        if (readingTypes.contains(type)) {
+            throw new NotValidArgumentException("Reading type " + type + " already exists.");
+        }
         readingTypes.add(type);
         readingTypeRepository.addColumnToReadingsTable(type);
     }
@@ -46,6 +51,7 @@ public class ReadingStructureService {
      * @param type the reading type to remove.
      * @return true if the reading type was removed from the list, false otherwise.
      */
+    @Audit(action = "Admin removed reading type: ")
     public boolean removeReadingType(String type) {
         boolean removed = readingTypes.remove(type);
         if (removed) {
@@ -60,5 +66,10 @@ public class ReadingStructureService {
      */
     private void updateReadingTypes() {
         readingTypes = readingTypeRepository.getReadingTypesFromDatabase();
+    }
+
+
+    public List<String> getReadingTypes() {
+        return readingTypes;
     }
 }

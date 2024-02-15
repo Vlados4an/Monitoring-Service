@@ -7,10 +7,10 @@
 
     <changeSet id="005-create-table-audits" author="Vlados4an">
         <createTable schemaName="develop" tableName="audits">
-            <column name="id" type="bigint" defaultValueComputed="nextval('develop.audit_id_seq')">
+            <column name="id" type="bigint" defaultValueComputed="nextval('develop.audit_id_seq')" remarks="Primary key using 'develop.audit_id_seq' sequence for unique ID generation.">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="action" type="varchar(255)">
+            <column name="action" type="varchar(255)" remarks="Stores the specific audit event message.">
                 <constraints nullable="false"/>
             </column>
         </createTable>

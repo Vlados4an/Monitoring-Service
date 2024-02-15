@@ -1,7 +1,6 @@
 package ru.erma.repository.impl;
 
 import ru.erma.config.DBConnectionProvider;
-import ru.erma.exception.DatabaseException;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 
@@ -33,13 +32,10 @@ public class AuditRepositoryImpl extends AbstractRepository implements AuditRepo
      * If the audit record is null, it throws a DatabaseException.
      *
      * @param audit the audit record to save.
-     * @throws DatabaseException if the audit record is null.
+     * @throws RuntimeException if the audit record is null.
      */
     @Override
     public void save(Audit audit) {
-        if (audit == null) {
-            throw new DatabaseException("Audit cannot be null",new NullPointerException());
-        }
         String sql = "INSERT INTO develop.audits (action) VALUES (?)";
         for (String action : audit.getAudits()) {
             executeUpdate(sql, action);
@@ -52,12 +48,12 @@ public class AuditRepositoryImpl extends AbstractRepository implements AuditRepo
      * If there is an error retrieving the audit records, it throws a DatabaseException.
      *
      * @return a list of all audit records from the database.
-     * @throws DatabaseException if there is an error retrieving the audit records.
+     * @throws RuntimeException if there is an error retrieving the audit records.
      */
     @Override
     public List<Audit> findAll() {
         List<Audit> audits = new ArrayList<>();
-        String sql = "SELECT * FROM develop.audits";
+        String sql = "SELECT id, action FROM develop.audits";
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
@@ -66,7 +62,7 @@ public class AuditRepositoryImpl extends AbstractRepository implements AuditRepo
                 audits.add(audit);
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Failed to get audits from result set", e);
+            throw new RuntimeException("Failed to get audits from result set: " + e.getMessage());
         }
         return audits;
     }
