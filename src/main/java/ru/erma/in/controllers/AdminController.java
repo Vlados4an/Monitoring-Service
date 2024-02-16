@@ -3,11 +3,12 @@ package ru.erma.in.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.erma.dto.AdminRequest;
+import ru.erma.dto.AssignDTO;
 import ru.erma.dto.AuditListDTO;
 import ru.erma.dto.SuccessResponse;
 import ru.erma.exception.TypeNotFoundException;
@@ -33,7 +34,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Add a reading type")
-    @PostMapping("/types")
+    @PostMapping
     public ResponseEntity<SuccessResponse> addReadingType(@ApiParam(value = "Added type", required = true)
                                                               @Valid @RequestBody AdminRequest adminRequest){
 
@@ -44,7 +45,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Remove a reading type")
-    @DeleteMapping("/types/{type}")
+    @DeleteMapping("/{type}")
     public ResponseEntity<SuccessResponse> removeReadingType(@ApiParam(value = "Removed type", required = true)
                                                                  @PathVariable String type){
 
@@ -57,11 +58,11 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Assign a user to the admin role")
-    @PostMapping("/assign-admin")
+    @PutMapping
     public ResponseEntity<SuccessResponse> assignAdmin(@ApiParam(value = "Username of the user to be assigned the admin role", required = true)
-                                                           @RequestParam String username) {
-        securityService.assignAdmin(username);
-        String message = "User with username " + username + " successfully assigned the admin role.";
+                                                           @RequestBody AssignDTO assignDTO) {
+        securityService.assignAdmin(assignDTO.username());
+        String message = "User with username " + assignDTO.username() + " successfully assigned the admin role.";
         return ResponseEntity.ok(new SuccessResponse(message));
     }
 }

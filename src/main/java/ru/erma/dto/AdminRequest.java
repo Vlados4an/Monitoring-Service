@@ -1,6 +1,6 @@
 package ru.erma.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 /**
  * The AdminRequest class is a record class in Java.

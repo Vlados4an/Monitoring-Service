@@ -3,7 +3,6 @@ package ru.erma.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.erma.aop.annotations.Audit;
@@ -11,6 +10,7 @@ import ru.erma.dto.JwtResponse;
 import ru.erma.dto.SecurityDTO;
 import ru.erma.exception.AuthorizeException;
 import ru.erma.exception.RegisterException;
+import ru.erma.exception.UserNotFoundException;
 import ru.erma.in.security.JwtTokenProvider;
 import ru.erma.mappers.UserMapper;
 import ru.erma.model.Role;
@@ -72,6 +72,9 @@ public class SecurityService {
         String username = securityDTO.username();
         String password = securityDTO.password();
 
+        userRepository.findUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+
         Role role = userRepository.findRoleByUsername(username);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -91,8 +94,8 @@ public class SecurityService {
     @Audit(action = "Assign new admin")
     public void assignAdmin(String username) {
         UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        user.setRole("ADMIN");
-        userRepository.save(user);
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+        user.setRole(Role.ADMIN.name());
+        userRepository.update(user);
     }
 }

@@ -31,4 +31,6 @@ public interface UserRepository<K,E> {
     void save(E user);
 
     Optional<K> findUsername(K username);
+
+    void update(E user);
 }

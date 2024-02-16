@@ -41,7 +41,6 @@ public class ReadingService {
 
     @Audit(action = "User submitted readings")
     public void submitReadings(ReadingRequest request) {
-        validateInput(request.values());
         List<Reading> existingReading = readingRepository.findByUsernameAndMonthAndYear(request.username(),request.month(),request.year());
 
         if (existingReading != null && !existingReading.isEmpty()) {
@@ -93,7 +92,8 @@ public class ReadingService {
 
     @Audit(action = "User viewed actual readings")
     public ReadingDTO getActualReadings(String username) {
-        Reading reading = readingRepository.findLatestByUsername(username);
+        Reading reading = readingRepository.findLatestByUsername(username)
+                .orElseThrow(()->new ReadingNotFoundException("No readings found for user with username " + username));
         return readingMapper.toReadingDTO(reading);
     }
 
@@ -111,25 +111,6 @@ public class ReadingService {
         }
         return userReadings;
     }
-    /**
-     * Validates the input for submitting readings.
-     * It checks if the month is between 1 and 12, if the year is a positive number, and if the readings are positive numbers.
-     * If the input is not valid, it throws a NotValidArgumentException.
-     * @param values a map of reading types and their corresponding values
-     */
-    private void validateInput(Map<String, Integer> values) {
 
-        for (Integer value : values.values()) {
-            if (value == null || value < 0) {
-                throw new NotValidArgumentException("Readings must be positive numbers.");
-            }
-        }
-        List<String> validTypes = readingStructureService.getReadingTypes();
-        for (String key : values.keySet()) {
-            if (!validTypes.contains(key)) {
-                throw new NotValidArgumentException("Invalid reading type: " + key);
-            }
-        }
-    }
 }
 
