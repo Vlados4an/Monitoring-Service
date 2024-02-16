@@ -1,5 +1,6 @@
 package ru.erma.repository.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,10 +9,7 @@ import ru.erma.repository.ReadingRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class ReadingRepositoryImpl implements ReadingRepository<String, Reading> {
@@ -53,9 +51,14 @@ public class ReadingRepositoryImpl implements ReadingRepository<String, Reading>
     }
 
     @Override
-    public Reading findLatestByUsername(String username) {
+    public Optional<Reading> findLatestByUsername(String username) {
         String sql = "SELECT * FROM develop.readings WHERE username = ? ORDER BY year DESC, month DESC LIMIT 1";
-        return jdbcTemplate.queryForObject(sql, new Object[]{username}, new ReadingRowMapper());
+        try {
+            Reading reading = jdbcTemplate.queryForObject(sql, new Object[]{username}, new ReadingRowMapper());
+            return Optional.ofNullable(reading);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private static class ReadingRowMapper implements RowMapper<Reading> {

@@ -35,6 +35,12 @@ public class UserRepositoryImpl implements UserRepository<String, UserEntity> {
     }
 
     @Override
+    public void update(UserEntity user) {
+        String sql = "UPDATE develop.users SET role = ? WHERE username = ?";
+        jdbcTemplate.update(sql, user.getRole(), user.getUsername());
+    }
+
+    @Override
     public Optional<String> findUsername(String username) {
         String sql = "SELECT username FROM develop.users WHERE username = ?";
         List<String> usernames = jdbcTemplate.query(sql, new Object[]{username}, (rs, rowNum) -> rs.getString("username"));

@@ -1,7 +1,7 @@
 package ru.erma.validation.validator;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.validation.annotation.ValidReadingValues;
 
