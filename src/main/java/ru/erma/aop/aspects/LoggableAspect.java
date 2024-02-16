@@ -1,19 +1,20 @@
 package ru.erma.aop.aspects;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This aspect is used to log execution information for methods annotated with @Loggable.
  * It uses the AspectJ framework to weave additional behavior into the annotated methods.
  */
+@Slf4j
 @Aspect
+@Component
 public class LoggableAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LoggableAspect.class);
 
     /**
      * This pointcut matches all methods within classes annotated with @Loggable.
@@ -32,11 +33,11 @@ public class LoggableAspect {
      */
     @Around("annotatedByLoggable()")
     public Object logging(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        logger.info("Calling method " + proceedingJoinPoint.getSignature());
+        log.info("Calling method " + proceedingJoinPoint.getSignature());
         long startTime = System.currentTimeMillis();
         Object result = proceedingJoinPoint.proceed();
         long endTime = System.currentTimeMillis();
-        logger.info("Execution of method " + proceedingJoinPoint.getSignature() +
+        log.info("Execution of method " + proceedingJoinPoint.getSignature() +
                 " finished. Execution time is " + (endTime - startTime) + " ms");
         return result;
     }

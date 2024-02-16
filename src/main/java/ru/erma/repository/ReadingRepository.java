@@ -36,4 +36,6 @@ public interface ReadingRepository<K,E> {
      * @return a list of readings for the specified username, month, and year
      */
     List<E> findByUsernameAndMonthAndYear(K username, int month, int year);
+
+    E findLatestByUsername(K username);
 }

@@ -9,10 +9,12 @@
         <insert tableName="users" schemaName="develop">
             <column name="username" value="admin"/>
             <column name="password" value="$2a$06$CkFcX2Dg1jZdZPExyTOas.i3AmsjAa6woPSWhf19H9l8/y6nndCtW"/>
+            <column name="role" value="ADMIN"/>
         </insert>
         <insert tableName="users" schemaName="develop">
             <column name="username" value="test_user"/>
             <column name="password" value="$2a$06$Xe31y8aMCjKIsFSHFZetUu536a/Uhg6PX6GlXiS0U1ZVOI9oB3c82"/>
+            <column name="role" value="USER"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

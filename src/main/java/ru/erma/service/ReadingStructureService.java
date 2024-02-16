@@ -1,5 +1,7 @@
 package ru.erma.service;
 
+import lombok.Getter;
+import org.springframework.stereotype.Service;
 import ru.erma.aop.annotations.Audit;
 import ru.erma.exception.NotValidArgumentException;
 import ru.erma.repository.ReadingTypeRepository;
@@ -12,10 +14,12 @@ import java.util.List;
  * It uses a ReadingTypeRepository to add and remove reading types, and to get the reading types from the database.
  * It maintains a list of the current reading types.
  */
+@Service
 public class ReadingStructureService {
 
     private final ReadingTypeRepository<String> readingTypeRepository;
 
+    @Getter
     private List<String> readingTypes = new ArrayList<>();
 
     /**
@@ -35,7 +39,8 @@ public class ReadingStructureService {
      *
      * @param type the reading type to add.
      */
-    @Audit(action = "Admin added new reading type: ")
+
+    @Audit(action = "Admin added new reading type")
     public void addReadingType(String type) {
         if (readingTypes.contains(type)) {
             throw new NotValidArgumentException("Reading type " + type + " already exists.");
@@ -51,7 +56,8 @@ public class ReadingStructureService {
      * @param type the reading type to remove.
      * @return true if the reading type was removed from the list, false otherwise.
      */
-    @Audit(action = "Admin removed reading type: ")
+
+    @Audit(action = "Admin removed reading type")
     public boolean removeReadingType(String type) {
         boolean removed = readingTypes.remove(type);
         if (removed) {
@@ -66,10 +72,5 @@ public class ReadingStructureService {
      */
     private void updateReadingTypes() {
         readingTypes = readingTypeRepository.getReadingTypesFromDatabase();
-    }
-
-
-    public List<String> getReadingTypes() {
-        return readingTypes;
     }
 }
