@@ -1,5 +1,7 @@
 package ru.erma.repository;
 
+import ru.erma.model.Role;
+
 import java.util.Optional;
 
 /**
@@ -19,10 +21,14 @@ public interface UserRepository<K,E> {
      */
     Optional<E> findByUsername(K username);
 
+    Role findRoleByUsername(K username);
+
     /**
      * Saves the given user.
      *
      * @param user the user to save
      */
     void save(E user);
+
+    Optional<K> findUsername(K username);
 }

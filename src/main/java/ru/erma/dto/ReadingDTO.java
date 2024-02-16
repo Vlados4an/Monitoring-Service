@@ -1,4 +1,4 @@
-package ru.erma.model;
+package ru.erma.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Reading {
+public class ReadingDTO {
     private Integer month;
 
     private Integer year;

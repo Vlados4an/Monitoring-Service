@@ -19,4 +19,6 @@ public @interface Audit {
      * @return the audit action
      */
     String action() default "";
+    String username() default "";
+
 }

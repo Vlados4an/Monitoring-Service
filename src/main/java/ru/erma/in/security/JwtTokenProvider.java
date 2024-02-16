@@ -4,40 +4,39 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+import ru.erma.model.Role;
+import ru.erma.model.User;
 import ru.erma.service.UserService;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.nio.file.AccessDeniedException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The JwtTokenProvider class is responsible for creating and validating JWT (JSON Web Token) tokens.
  * It uses the JJWT library to create and parse JWT tokens.
  * It contains methods to create access and refresh tokens, authenticate a user based on a token, get the login from a token, and validate a token.
  */
+@Service
+@RequiredArgsConstructor
 public class JwtTokenProvider {
-    private final Long access;
 
-    private final Long refresh;
-
+    private final JwtProperties properties;
     private final UserService userService;
 
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
 
-    /**
-     * Constructs a new JwtTokenProvider instance with the specified secret, access token duration, refresh token duration, and UserService.
-     * It creates a SecretKey from the specified secret.
-     *
-     * @param secret the secret used to sign the JWT tokens
-     * @param access the duration of the access token in milliseconds
-     * @param refresh the duration of the refresh token in milliseconds
-     * @param userService the UserService used to get user details
-     */
-    public JwtTokenProvider(String secret, Long access, Long refresh, UserService userService) {
-        this.access = access;
-        this.refresh = refresh;
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-        this.userService = userService;
+    @PostConstruct
+    public void init() {
+        this.secretKey = Keys.hmacShaKeyFor(properties.getSecret().getBytes());
     }
 
     /**
@@ -50,12 +49,22 @@ public class JwtTokenProvider {
      * @throws AccessDeniedException if the token is not valid
      */
     public Authentication authentication(String token) throws AccessDeniedException {
-        if (!validateToken(token)) {
-            throw new AccessDeniedException("Access denied!");
-        }
-        String login = getLoginFromToken(token);
-        userService.getByUsername(login);
-        return new Authentication(login, true, null);
+        String username = getLoginFromToken(token);
+        Role role = getRoleFromToken(token);
+        User userDetails = userService.loadUserByUsername(username);
+
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+    }
+
+    private Role getRoleFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return Role.valueOf((String) claims.get("role"));
     }
 
     /**
@@ -100,8 +109,8 @@ public class JwtTokenProvider {
      * @param login the login for which the access token is created
      * @return the created access token
      */
-    public String createAccessToken(String login) {
-        return createToken(login, access);
+    public String createAccessToken(String login,Role role) {
+        return createToken(login, properties.getAccess(),role);
     }
 
     /**
@@ -112,8 +121,8 @@ public class JwtTokenProvider {
      * @param login the login for which the refresh token is created
      * @return the created refresh token
      */
-    public String createRefreshToken(String login) {
-        return createToken(login, refresh);
+    public String createRefreshToken(String login,Role role) {
+        return createToken(login, properties.getRefresh(),role);
     }
 
     /**
@@ -126,15 +135,17 @@ public class JwtTokenProvider {
      * @param duration the duration of the token in milliseconds
      * @return the created token
      */
-    private String createToken(String login, Long duration) {
-        Claims claims = Jwts.claims().subject(login).build();
+    private String createToken(String login, Long duration, Role role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + duration);
+
         return Jwts.builder()
-                .claims(claims)
+                .subject(login)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey)
                 .compact();
     }
+
 }

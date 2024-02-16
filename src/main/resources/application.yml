@@ -1,0 +1,14 @@
+db:
+  url : jdbc:postgresql://localhost:5435/monitoring_service
+  username : postgres_user
+  password : postgres_pass
+  driver : org.postgresql.Driver
+
+liquibase:
+  change-log: classpath:db.changelog/db.changelog-master.xml
+  liquibase-schema: migration
+
+jwt:
+  secret: c3VwZXJwdXBlcmR1cGVybWVnYWhhcmRvdmVydG9waGlnaHNlY3JldA==
+  access: 3600000
+  refresh: 2592000000

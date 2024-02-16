@@ -1,6 +1,9 @@
 package ru.erma.service;
 
-import ru.erma.exception.NotValidArgumentException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.erma.dto.AuditListDTO;
+import ru.erma.mappers.AuditMapper;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 
@@ -10,25 +13,14 @@ import java.util.List;
  * This class provides services related to Audit operations.
  * It uses an AuditRepository to perform operations on Audit data.
  */
+@Service
+@RequiredArgsConstructor
 public class AuditService {
 
     private final AuditRepository<Audit> auditRepository;
+    private final AuditMapper mapper;
 
-    public AuditService(AuditRepository<Audit> auditRepository) {
-        this.auditRepository = auditRepository;
-    }
-
-    /**
-     * Logs an action by creating a new Audit and saving it in the AuditRepository.
-     *
-     * @param action the action to log
-     */
-    public void logAction(String action){
-        if (action == null) {
-            throw new NotValidArgumentException("Audit cannot be null");
-        }
-        Audit audit = new Audit();
-        audit.getAudits().add(action);
+    public void saveAudit(Audit audit) {
         auditRepository.save(audit);
     }
 
@@ -38,7 +30,8 @@ public class AuditService {
      * @return a list of all Audit objects
      */
     @ru.erma.aop.annotations.Audit(action = "Admin viewed all audits")
-    public List<Audit> getAllAudits(){
-        return auditRepository.findAll();
+    public AuditListDTO getAllAudits(){
+        List<Audit> audits = auditRepository.findAll();
+        return mapper.toAuditListDTO(audits);
     }
 }

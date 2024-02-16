@@ -1,42 +1,58 @@
 package ru.erma.model;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
  * The User class represents users in the system.
  * Each user has a username, password and a list of readings.
  */
-public class User {
-    private String username;
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class User implements UserDetails {
 
-    private byte[] password;
+    private final UserEntity userEntity;
 
-    private List<Reading> readings;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userEntity.getRole()));
+    }
 
+    @Override
+    public String getPassword() {
+        return userEntity.getPassword();
+    }
 
-    public User() {}
-
+    @Override
     public String getUsername() {
-        return username;
+        return userEntity.getUsername();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public byte[] getPassword() {
-        return password;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setPassword(byte[] password) {
-        this.password = password;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public List<Reading> getReadings() {
-        return readings;
-    }
-
-    public void setReadings(List<Reading> readings) {
-        this.readings = readings;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
