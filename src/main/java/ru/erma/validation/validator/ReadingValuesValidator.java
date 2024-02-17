@@ -1,20 +1,18 @@
 package ru.erma.validation.validator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.validation.annotation.ValidReadingValues;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class ReadingValuesValidator implements ConstraintValidator<ValidReadingValues, Map<String, Integer>> {
 
     private final ReadingStructureService readingStructureService;
-
-    public ReadingValuesValidator(ReadingStructureService readingStructureService) {
-        this.readingStructureService = readingStructureService;
-    }
 
     @Override
     public boolean isValid(Map<String, Integer> values, ConstraintValidatorContext context) {

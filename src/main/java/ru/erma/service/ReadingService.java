@@ -6,7 +6,6 @@ import ru.erma.aop.annotations.Audit;
 import ru.erma.dto.ReadingDTO;
 import ru.erma.dto.ReadingListDTO;
 import ru.erma.dto.ReadingRequest;
-import ru.erma.exception.NotValidArgumentException;
 import ru.erma.exception.ReadingAlreadyExistsException;
 import ru.erma.exception.ReadingNotFoundException;
 import ru.erma.mappers.ReadingMapper;
@@ -14,7 +13,6 @@ import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**

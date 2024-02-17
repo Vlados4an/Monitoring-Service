@@ -3,6 +3,7 @@ package ru.erma.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.erma.dto.AuditListDTO;
+import ru.erma.exception.NoLogsFoundException;
 import ru.erma.mappers.AuditMapper;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
@@ -32,6 +33,9 @@ public class AuditService {
     @ru.erma.aop.annotations.Audit(action = "Admin viewed all audits")
     public AuditListDTO getAllAudits(){
         List<Audit> audits = auditRepository.findAll();
+        if (audits.isEmpty()) {
+            throw new NoLogsFoundException("No audit logs found");
+        }
         return mapper.toAuditListDTO(audits);
     }
 }
