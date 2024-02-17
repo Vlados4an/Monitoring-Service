@@ -10,6 +10,5 @@ import javax.validation.constraints.NotBlank;
  * The type field represents the type of reading to be added by the admin.
  */
 public record AdminRequest(
-        @NotBlank(message = "Username must not be blank.") String username,
         @NotBlank(message = "type should not be blank") String type) {
 }
