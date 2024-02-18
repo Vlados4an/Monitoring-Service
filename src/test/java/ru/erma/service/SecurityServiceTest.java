@@ -134,6 +134,12 @@ class SecurityServiceTest {
                 .hasMessage("User not found with username: " + securityDTO.username());
     }
 
+    /**
+     * This test verifies that the assignAdmin method correctly assigns a user as an admin.
+     * It sets up the mock UserRepository to return a User when findByUsername is called.
+     * It then calls assignAdmin on the SecurityService instance and asserts that the User's role is ADMIN.
+     * It also verifies that update was called on the UserRepository mock.
+     */
     @Test
     @DisplayName("AssignAdmin assigns user as admin successfully")
     void assignAdmin_assignsUserAsAdminSuccessfully() {
@@ -150,6 +156,11 @@ class SecurityServiceTest {
         verify(userRepository, times(1)).update(userEntity);
     }
 
+    /**
+     * This test verifies that the assignAdmin method throws a UserNotFoundException when the user does not exist.
+     * It sets up the mock UserRepository to return an empty Optional when findByUsername is called.
+     * It then calls assignAdmin on the SecurityService instance and asserts that a UserNotFoundException is thrown.
+     */
     @Test
     @DisplayName("AssignAdmin throws UserNotFoundException when user not found")
     void assignAdmin_throwsUserNotFoundException() {

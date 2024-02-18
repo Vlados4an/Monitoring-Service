@@ -3,7 +3,6 @@ package ru.erma.in.controllers;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,13 +16,17 @@ import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+/**
+ * This controller advice is used to handle exceptions globally across the whole application.
+ * It defines methods that handle specific exceptions thrown by controllers.
+ * Each method is annotated with @ExceptionHandler and @ResponseStatus to specify the exception type and HTTP status code.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(TypeNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlePlayerNotFoundException(TypeNotFoundException ex ,WebRequest request) {
-        return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+        return createErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(AuthorizeException.class)
@@ -61,6 +64,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleUserNotFoundException(UserNotFoundException ex ,WebRequest request){
         return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex ,WebRequest request) {

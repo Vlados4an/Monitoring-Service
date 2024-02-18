@@ -40,5 +40,11 @@ public interface ReadingRepository<K,E> {
      */
     List<E> findByUsernameAndMonthAndYear(K username, int month, int year);
 
+    /**
+     * Retrieves the latest reading for the specified username.
+     *
+     * @param username the username for which to retrieve the latest reading
+     * @return an Optional containing the latest reading for the specified username, or an empty Optional if no readings are found
+     */
     Optional<Reading> findLatestByUsername(K username);
 }

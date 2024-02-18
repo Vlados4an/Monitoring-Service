@@ -12,6 +12,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class implements the UserRepository interface.
+ * It provides methods to find a user by username, to save a user, to find a role by username, to find a username, and to update a user.
+ * It uses the JdbcTemplate to execute SQL queries.
+ */
 @Repository
 public class UserRepositoryImpl implements UserRepository<String, UserEntity> {
 

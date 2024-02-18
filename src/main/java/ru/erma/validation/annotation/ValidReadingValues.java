@@ -1,7 +1,7 @@
 package ru.erma.validation.annotation;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import ru.erma.validation.validator.ReadingValuesValidator;
 
 import java.lang.annotation.ElementType;

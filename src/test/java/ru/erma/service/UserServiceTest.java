@@ -53,13 +53,13 @@ class UserServiceTest {
     }
 
     /**
-     * This test verifies that the getByUsername method of UserService throws a UserNotFoundException when the user does not exist.
+     * This test verifies that the loadUserByUsername method of UserService throws a UserNotFoundException when the user does not exist.
      * It sets up the mock UserRepository to return an empty Optional when findByUsername is called.
      * It then calls getByUsername on the UserService instance and asserts that a UserNotFoundException is thrown.
      */
     @Test
-    @DisplayName("GetByUsername throws exception when user does not exist")
-    void getByUsername_throwsExceptionWhenUserDoesNotExist() {
+    @DisplayName("loadUserByUsername throws exception when user does not exist")
+    void loadUserByUsername_throwsExceptionWhenUserDoesNotExist() {
         String username = "testUser";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());

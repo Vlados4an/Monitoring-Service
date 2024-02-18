@@ -52,6 +52,15 @@ public class AuditAspect {
         auditService.saveAudit(auditRecord);
     }
 
+    /**
+     * This method retrieves the username associated with the method execution.
+     * If the method is 'register' or 'authorization', the username is retrieved from the method arguments.
+     * Otherwise, the username is retrieved from the security context.
+     *
+     * @param joinPoint provides information about the method execution
+     * @param methodName the name of the method
+     * @return the username
+     */
     private static String getUsername(JoinPoint joinPoint, String methodName) {
         String username = "";
 

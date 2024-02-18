@@ -25,7 +25,6 @@ import java.util.List;
 public class ReadingService {
 
     private final ReadingRepository<String, Reading> readingRepository;
-    private final ReadingStructureService readingStructureService;
     private final ReadingMapper readingMapper;
 
     /**

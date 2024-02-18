@@ -22,9 +22,9 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
     private UserRepositoryImpl userRepository;
 
     /**
-     * The setUp method initializes the UserRepositoryImpl instance before each test.
-     * It calls the setUp method of the superclass to initialize the connection provider,
-     * and then creates a new UserRepositoryImpl with the connection provider.
+     * Sets up the UserRepositoryImpl instance before each test.
+     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
+     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
      */
     @BeforeEach
     void setUp() {
@@ -80,6 +80,10 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
+    /**
+     * Tests that the findRoleByUsername method correctly retrieves the role of a user given their username.
+     * Asserts that the returned role matches the expected role.
+     */
     @Test
     @DisplayName("Role is retrieved correctly by username")
     void shouldFindRoleByUsername() {
@@ -89,6 +93,11 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
         assertThat(role).isEqualTo(USER);
     }
 
+    /**
+     * Tests that the update method correctly updates a user's details in the repository.
+     * It creates a new UserEntity, saves it to the repository, updates its role, and then updates it in the repository.
+     * It then retrieves the updated role from the repository and asserts that it matches the expected role.
+     */
     @Test
     @DisplayName("User is updated correctly")
     void shouldUpdateUser() {

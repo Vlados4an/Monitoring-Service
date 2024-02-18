@@ -15,9 +15,9 @@ public class ReadingTypeRepositoryImplTest extends AbstractRepositoryForTest {
     private ReadingTypeRepositoryImpl readingTypeRepository;
 
     /**
-     * The setUp method initializes the ReadingTypeRepositoryImpl instance before each test.
-     * It calls the setUp method of the superclass to initialize the connection provider,
-     * and then creates a new ReadingTypeRepositoryImpl with the connection provider.
+     * Sets up the ReadingTypeRepositoryImpl instance before each test.
+     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
+     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
      */
     @BeforeEach
     void setUp() {

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,7 +15,6 @@ import ru.erma.model.Role;
 import ru.erma.model.User;
 import ru.erma.service.UserService;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.nio.file.AccessDeniedException;
 import java.util.Date;
