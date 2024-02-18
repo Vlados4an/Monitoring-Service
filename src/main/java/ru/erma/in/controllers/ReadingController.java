@@ -1,9 +1,10 @@
 package ru.erma.in.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,6 @@ import ru.erma.dto.SuccessResponse;
 import ru.erma.exception.AuthorizeException;
 import ru.erma.service.ReadingService;
 
-@Api(value = "Reading Controller", description = "Operations pertaining to reading functionalities")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/readings")
@@ -25,40 +25,45 @@ import ru.erma.service.ReadingService;
 public class ReadingController {
     private final ReadingService readingService;
 
-    @ApiOperation(value = "Get actual readings for a user")
+    @Operation(summary = "Get actual readings")
     @GetMapping("/actual/{username}")
-    public ResponseEntity<ReadingDTO> getActualReadings(@ApiParam(value = "Username of the user", required = true)
-                                                            @PathVariable String username){
+    public ResponseEntity<ReadingDTO> getActualReadings(@PathVariable @Parameter(description = "Username")
+                                                            String username){
         validateUsername(username);
 
         ReadingDTO readingDTO = readingService.getActualReadings(username);
         return ResponseEntity.ok(readingDTO);
     }
 
-    @ApiOperation(value = "Get history readings for a user")
+    @Operation(summary = "Get readings history")
     @GetMapping("/history/{username}")
-    public ResponseEntity<ReadingListDTO> getReadingsHistory(@ApiParam(value = "Username of the user", required = true)
-                                                                 @PathVariable String username){
+    public ResponseEntity<ReadingListDTO> getReadingsHistory(@PathVariable @Parameter(description = "Username")
+                                                                 String username){
         validateUsername(username);
 
         ReadingListDTO readingListDTO = readingService.getReadingHistory(username);
         return ResponseEntity.ok(readingListDTO);
     }
 
+    @Operation(summary = "Get readings for a specific month")
     @GetMapping("/{username}/{month}/{year}")
-    public ResponseEntity<ReadingListDTO> getReadingsForMonth(@ApiParam(value = "Username of the user", required = true) @PathVariable String username,
-                                                              @ApiParam(value = "Month for the readings", required = true) @PathVariable Integer month,
-                                                              @ApiParam(value = "Year for the readings", required = true) @PathVariable Integer year) {
+    public ResponseEntity<ReadingListDTO> getReadingsForMonth( @PathVariable @Parameter(description = "Username") String username,
+                                                               @PathVariable @Parameter(description = "Month") Integer month,
+                                                               @PathVariable @Parameter(description = "Year") Integer year) {
         validateUsername(username);
 
         ReadingListDTO readingListDTO = readingService.getReadingsForMonth(username, month, year);
         return ResponseEntity.ok(readingListDTO);
     }
 
-    @ApiOperation(value = "Post submit readings for a user")
+    @Operation(summary = "Submit readings")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reading submitted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     @PostMapping
-    public ResponseEntity<SuccessResponse> submitReadings(@ApiParam(value = "Reading request", required = true)
-                                                              @Valid @RequestBody ReadingRequest request){
+    public ResponseEntity<SuccessResponse> submitReadings(@Valid @RequestBody  @Parameter(description = "Reading request")
+                                                              ReadingRequest request){
         validateUsername(request.username());
 
         readingService.submitReadings(request);

@@ -11,6 +11,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * This class implements the ReadingRepository interface.
+ * It provides methods to save and retrieve reading records from the database.
+ * It uses the JdbcTemplate to execute SQL queries.
+ */
 @Repository
 public class ReadingRepositoryImpl implements ReadingRepository<String, Reading> {
 

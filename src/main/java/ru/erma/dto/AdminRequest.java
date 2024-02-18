@@ -1,14 +1,10 @@
 package ru.erma.dto;
 
-import javax.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
-/**
- * The AdminRequest class is a record class in Java.
- * It is used to represent a request made by an admin in the system.
- * It contains two fields: username and type.
- * The username field represents the username of the admin making the request.
- * The type field represents the type of reading to be added by the admin.
- */
+@Schema(description = "Data object representing a request made by an admin in the system")
 public record AdminRequest(
+        @Schema(description = "Type of the reading to be added by the admin", example = "temperature")
         @NotBlank(message = "type should not be blank") String type) {
 }

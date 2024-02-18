@@ -10,6 +10,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+
+/**
+ * This abstract class is used as a base for repository tests.
+ * It sets up a PostgreSQL test container and a JdbcTemplate for executing SQL queries.
+ * The test container is started before all tests and stopped after all tests.
+ * Before each test, a new JdbcTemplate is created and the database schema is updated using Liquibase.
+ */
 @Testcontainers
 public abstract class AbstractRepositoryForTest {
 

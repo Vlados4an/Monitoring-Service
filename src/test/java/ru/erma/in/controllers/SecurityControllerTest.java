@@ -36,12 +36,21 @@ class SecurityControllerTest {
 
     private ObjectMapper objectMapper;
 
+    /**
+     * Initializes the MockMvc and ObjectMapper instances before each test.
+     */
     @BeforeEach
     void setUp(){
         mockMvc = MockMvcBuilders.standaloneSetup(securityController).build();
         objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Tests that the login method correctly returns a JwtResponse when the credentials are valid.
+     * It creates a SecurityDTO and a JwtResponse, mocks the authorization method of the SecurityService to return the JwtResponse,
+     * performs a POST request to "/auth/login" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body matches the JwtResponse.
+     * It also verifies that the authorization method of the SecurityService was called once with the SecurityDTO.
+     */
     @Test
     @DisplayName("Login returns JwtResponse when credentials are valid")
     void login_returnsJwtResponseWhenCredentialsAreValid() throws Exception {
@@ -60,6 +69,12 @@ class SecurityControllerTest {
         verify(securityService, times(1)).authorization(securityDTO);
     }
 
+    /**
+     * Tests that the registration method correctly returns a success response when the username is not taken.
+     * It creates a SecurityDTO and a UserEntity, mocks the register method of the SecurityService to return the UserEntity,
+     * performs a POST request to "/auth/registration" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body contains the expected message.
+     * It also verifies that the register method of the SecurityService was called once with the SecurityDTO.
+     */
     @Test
     @DisplayName("Registration returns success response when username is not taken")
     void registration_returnsSuccessResponseWhenUsernameIsNotTaken() throws Exception {

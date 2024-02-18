@@ -7,6 +7,11 @@ import ru.erma.repository.ReadingTypeRepository;
 import java.sql.ResultSet;
 import java.util.List;
 
+/**
+ * This class implements the ReadingRepository interface.
+ * It provides methods to save and retrieve reading records from the database.
+ * It uses the JdbcTemplate to execute SQL queries.
+ */
 @Repository
 public class ReadingTypeRepositoryImpl implements ReadingTypeRepository<String> {
 

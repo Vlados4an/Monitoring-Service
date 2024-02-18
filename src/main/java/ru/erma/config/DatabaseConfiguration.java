@@ -15,7 +15,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Database config class
+ * This configuration class sets up the database connection and related beans.
+ * It reads the database configuration from the application.yml file.
  */
 @Configuration
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
@@ -39,6 +40,11 @@ public class DatabaseConfiguration {
     @Value("${liquibase.change-log}")
     private String changeLogFile;
 
+    /**
+     * This method creates a DataSource bean for the database connection.
+     * It also creates the Liquibase schema if it does not exist.
+     * @return the DataSource bean
+     */
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -55,6 +61,12 @@ public class DatabaseConfiguration {
 
         return dataSource;
     }
+
+    /**
+     * This method creates a SpringLiquibase bean for database migration.
+     * It uses the DataSource bean and the Liquibase configuration parameters.
+     * @return the SpringLiquibase bean
+     */
     @Bean
     public SpringLiquibase liquibase() {
         SpringLiquibase liquibase = new SpringLiquibase();
@@ -63,6 +75,12 @@ public class DatabaseConfiguration {
         liquibase.setDataSource(dataSource());
         return liquibase;
     }
+
+    /**
+     * This method creates a JdbcTemplate bean for executing SQL queries.
+     * It uses the DataSource bean.
+     * @return the JdbcTemplate bean
+     */
     @Bean
     public JdbcTemplate jdbcTemplate(){
         return new JdbcTemplate(dataSource());

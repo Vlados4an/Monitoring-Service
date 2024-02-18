@@ -1,13 +1,18 @@
 package ru.erma.validation.validator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import ru.erma.dto.ReadingRequest;
 import ru.erma.validation.annotation.DateNotInFuture;
 
 import java.time.DateTimeException;
 import java.time.YearMonth;
 
+/**
+ * This class validates that the date in a ReadingRequest is not in the future.
+ * It implements the ConstraintValidator interface provided by Jakarta Validation.
+ * The DateNotInFuture annotation is used to apply this validator to a ReadingRequest.
+ */
 public class DateNotInFutureValidator implements ConstraintValidator<DateNotInFuture, ReadingRequest> {
     @Override
     public boolean isValid(ReadingRequest value, ConstraintValidatorContext context) {

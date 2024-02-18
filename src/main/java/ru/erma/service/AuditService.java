@@ -21,6 +21,11 @@ public class AuditService {
     private final AuditRepository<Audit> auditRepository;
     private final AuditMapper mapper;
 
+    /**
+     * Saves the given audit record to the AuditRepository.
+     *
+     * @param audit the audit record to save
+     */
     public void saveAudit(Audit audit) {
         auditRepository.save(audit);
     }

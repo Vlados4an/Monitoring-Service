@@ -23,6 +23,16 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository<String, UserEntity> userRepository;
 
+    /**
+     * Loads the user details by the given username.
+     * This method is required by the UserDetailsService interface in Spring Security.
+     * It is used for authentication and authorization.
+     * The method is annotated with @Loggable, which means that its execution time is logged.
+     *
+     * @param username the username of the user to load
+     * @return a User object containing the user's details
+     * @throws UsernameNotFoundException if the user is not found
+     */
     @Loggable
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {

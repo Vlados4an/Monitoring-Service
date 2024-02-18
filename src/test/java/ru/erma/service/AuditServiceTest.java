@@ -40,6 +40,12 @@ class AuditServiceTest {
      */
     @InjectMocks
     private AuditService auditService;
+
+    /**
+     * Tests that the saveAudit method correctly saves an audit.
+     * It creates an audit, calls the saveAudit method with the audit, and verifies that the save method of the AuditRepository was called with the audit.
+     * Asserts that no exception is thrown when saving the audit.
+     */
     @Test
     @DisplayName("SaveAudit method saves the audit successfully")
     void saveAudit_savesAuditSuccessfully() {
@@ -54,8 +60,9 @@ class AuditServiceTest {
     }
 
     /**
-     * This test verifies that when the getAllAudits method is called,
-     * it returns all AuditLogs from the repository.
+     * Tests that the getAllAudits method correctly retrieves all audits.
+     * It creates two audits, saves them to the AuditRepository, and calls the getAllAudits method.
+     * Asserts that the returned AuditListDTO is not null, that it contains two audits, and that the audits match the expected audits.
      */
     @Test
     @DisplayName("GetAllAudits method returns all Audits from the repository")
@@ -85,6 +92,10 @@ class AuditServiceTest {
         assertThat(allAudits.getAudits().get(1)).isEqualTo(audit2);
     }
 
+    /**
+     * Tests that the getAllAudits method correctly handles the case where there are no audits.
+     * It calls the getAllAudits method and asserts that a NoLogsFoundException is thrown with the message "No audit logs found".
+     */
     @Test
     @DisplayName("GetAllAudits method returns empty list when no audits are found")
     void getAllAudits_throwsNoLogsFoundException() {

@@ -1,14 +1,19 @@
 package ru.erma.validation.validator;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.validation.annotation.ValidReadingValues;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class validates that the values in a reading are valid.
+ * It implements the ConstraintValidator interface provided by Jakarta Validation.
+ * The ValidReadingValues annotation is used to apply this validator to a Map<String, Integer>.
+ */
 @RequiredArgsConstructor
 public class ReadingValuesValidator implements ConstraintValidator<ValidReadingValues, Map<String, Integer>> {
 

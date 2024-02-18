@@ -39,7 +39,6 @@ public class ReadingStructureService {
      *
      * @param type the reading type to add.
      */
-
     @Audit(action = "Admin added new reading type")
     public void addReadingType(String type) {
         if (readingTypes.contains(type)) {
@@ -56,7 +55,6 @@ public class ReadingStructureService {
      * @param type the reading type to remove.
      * @return true if the reading type was removed from the list, false otherwise.
      */
-
     @Audit(action = "Admin removed reading type")
     public boolean removeReadingType(String type) {
         boolean removed = readingTypes.remove(type);

@@ -10,15 +10,21 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Factory for yaml property source configuration
+ * This class is a factory for creating PropertySource objects from YAML configuration files.
+ * It implements the PropertySourceFactory interface provided by Spring.
  */
 public class YamlPropertySourceFactory implements PropertySourceFactory {
 
     /**
-     * @param name
-     * @param encodedResource
-     * @return
-     * @throws IOException
+     * This method creates a PropertySource object from the specified EncodedResource.
+     * The EncodedResource represents a YAML configuration file.
+     * The method uses a YamlPropertiesFactoryBean to load the properties from the YAML file.
+     * The properties are then used to create a new PropertiesPropertySource.
+     *
+     * @param name the name of the PropertySource
+     * @param encodedResource the EncodedResource representing the YAML configuration file
+     * @return the created PropertySource
+     * @throws IOException if an I/O error occurs when reading from the YAML file
      */
     @Override
     public PropertySource<?> createPropertySource(String name, EncodedResource encodedResource)

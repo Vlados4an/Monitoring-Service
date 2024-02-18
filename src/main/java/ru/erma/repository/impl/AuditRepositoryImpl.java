@@ -10,6 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * This class implements the AuditRepository interface.
+ * It provides methods to save and retrieve audit records from the database.
+ * It uses the JdbcTemplate to execute SQL queries.
+ */
 @Repository
 public class AuditRepositoryImpl implements AuditRepository<Audit> {
 

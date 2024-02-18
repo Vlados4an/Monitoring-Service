@@ -1,9 +1,10 @@
 package ru.erma.in.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,6 @@ import ru.erma.service.SecurityService;
 /**
  * The security controller
  */
-@Api(value = "Security Controller", description = "Operations pertaining to user authentication and registration")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -33,10 +33,14 @@ public class SecurityController {
      * @param dto the security request
      * @return response entity
      */
-    @ApiOperation(value = "Authorize user in application")
+    @Operation(summary = "Authorize user in application")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User authorized successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@ApiParam(value = "Security request", required = true)
-                                                 @Valid @RequestBody SecurityDTO dto) {
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody @Parameter(description = "Security request")
+                                                 SecurityDTO dto) {
         JwtResponse response = securityService.authorization(dto);
         return ResponseEntity.ok(response);
     }
@@ -47,10 +51,14 @@ public class SecurityController {
      * @param dto the security request
      * @return response entity
      */
-    @ApiOperation(value = "Register the user in application")
+    @Operation(summary = "Register the user in application")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     @PostMapping("/registration")
-    public ResponseEntity<SuccessResponse> registration(@ApiParam(value = "Security request", required = true)
-                                                            @Valid @RequestBody SecurityDTO dto) {
+    public ResponseEntity<SuccessResponse> registration(@Valid @RequestBody @Parameter(description = "Security request")
+                                                            SecurityDTO dto) {
         UserEntity register = securityService.register(dto);
         String message = "User with username " + register.getUsername() + " successfully created.";
         return ResponseEntity.ok(new SuccessResponse(message));

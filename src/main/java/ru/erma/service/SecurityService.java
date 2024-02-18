@@ -91,6 +91,15 @@ public class SecurityService {
         return new JwtResponse(username, accessToken, refreshToken);
     }
 
+    /**
+     * Assigns the role of admin to the user with the specified username.
+     * The method first retrieves the user from the UserRepository.
+     * If the user does not exist, it throws a UserNotFoundException.
+     * Then, it sets the user's role to ADMIN and updates the user in the UserRepository.
+     *
+     * @param username the username of the user to assign the admin role
+     * @throws UserNotFoundException if the user does not exist
+     */
     @Audit(action = "Assign new admin")
     public void assignAdmin(String username) {
         UserEntity user = userRepository.findByUsername(username)
