@@ -1,19 +1,27 @@
 package ru.erma.aop.aspects;
 
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import ru.erma.aop.annotations.Audit;
-import ru.erma.aop.init.AuditServiceInitializer;
+import ru.erma.dto.SecurityDTO;
 import ru.erma.service.AuditService;
+
+import java.time.LocalDateTime;
 
 /**
  * This aspect is used to log audit information for methods annotated with @Audit.
  * It uses the AspectJ framework to weave additional behavior into the annotated methods.
  */
 @Aspect
+@Component
+@RequiredArgsConstructor
 public class AuditAspect {
+    private final AuditService auditService;
 
     /**
      * This pointcut matches all methods annotated with @Audit.
@@ -34,13 +42,41 @@ public class AuditAspect {
     @AfterReturning(value = "measurePointCut(audit)", argNames = "joinPoint,audit")
     public void methodExecutionMeasure(JoinPoint joinPoint, Audit audit) {
         String methodName = joinPoint.getSignature().getName();
-
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
 
+        String username = getUsername(joinPoint, methodName);
+
         String auditInfo = audit.action().isEmpty() ? "Called method " + methodName + " of class " + className : audit.action();
+        ru.erma.model.Audit auditRecord = new ru.erma.model.Audit(username, LocalDateTime.now(), auditInfo);
 
-        AuditService auditService = AuditServiceInitializer.initializeAuditService();
+        auditService.saveAudit(auditRecord);
+    }
 
-        auditService.logAction(auditInfo);
+    /**
+     * This method retrieves the username associated with the method execution.
+     * If the method is 'register' or 'authorization', the username is retrieved from the method arguments.
+     * Otherwise, the username is retrieved from the security context.
+     *
+     * @param joinPoint provides information about the method execution
+     * @param methodName the name of the method
+     * @return the username
+     */
+    private static String getUsername(JoinPoint joinPoint, String methodName) {
+        String username = "";
+
+        if (methodName.equals("register") || methodName.equals("authorization")) {
+            Object[] args = joinPoint.getArgs();
+            for (Object arg : args) {
+                if (arg instanceof SecurityDTO) {
+                    username = ((SecurityDTO) arg).username();
+                    break;
+                }
+            }
+        }
+
+        if (username.isEmpty()) {
+            username = SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        return username;
     }
 }

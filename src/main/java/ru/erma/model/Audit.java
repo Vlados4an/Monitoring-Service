@@ -1,37 +1,27 @@
 package ru.erma.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+
 
 /**
- * The Audit class represent audits in the system.
- * It contains a list of audit entries, each representing an action performed in the system.
- * It also contains an id for the audit.
+ * The Audit class represents an audit record in the system.
+ * Each instance of this class corresponds to a single action performed by a user at a specific time.
  */
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Audit {
-    Long id;
+   String username;
 
-    private final List<String> audits;
-    /**
-     * Default constructor for the Audit class.
-     * Initializes the list of audit entries.
-     */
-    public Audit(){
-        this.audits = new ArrayList<>();
-    }
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+   LocalDateTime timestamp;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<String> getAudits() {
-        return audits;
-    }
-
-
+   private String action;
 }

@@ -1,15 +1,18 @@
 package ru.erma.repository.impl;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.erma.model.User;
-import ru.erma.util.PasswordHasher;
+import ru.erma.model.Role;
+import ru.erma.model.UserEntity;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static ru.erma.model.Role.ADMIN;
+import static ru.erma.model.Role.USER;
 
 /**
  * The UserRepositoryImplTest class tests the functionality of the UserRepositoryImpl class.
@@ -19,14 +22,14 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
     private UserRepositoryImpl userRepository;
 
     /**
-     * The setUp method initializes the UserRepositoryImpl instance before each test.
-     * It calls the setUp method of the superclass to initialize the connection provider,
-     * and then creates a new UserRepositoryImpl with the connection provider.
+     * Sets up the UserRepositoryImpl instance before each test.
+     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
+     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
      */
     @BeforeEach
     void setUp() {
         super.setUp();
-        userRepository = new UserRepositoryImpl(connectionProvider);
+        userRepository = new UserRepositoryImpl(jdbcTemplate);
     }
 
     /**
@@ -34,11 +37,11 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
      * It asserts that the returned user is present and that its username matches the expected username.
      */
     @Test
-    @DisplayName("Test that user is retrieved correctly by username")
-    void testFindByUsername() {
+    @DisplayName("User is retrieved correctly by username")
+    void shouldFindByUsername() {
         String username = "test_user";
 
-        Optional<User> actualUser = userRepository.findByUsername(username);
+        Optional<UserEntity> actualUser = userRepository.findByUsername(username);
 
         assertThat(actualUser).isPresent();
         assertThat(actualUser.get().getUsername()).isEqualTo(username);
@@ -50,20 +53,20 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
      * It asserts that the retrieved user is present and that its username and password match the expected username and password.
      */
     @Test
-    @DisplayName("Test that user is saved correctly with all properties")
-    void testSaveAllProperties() {
-        String username = "testUser228";
-        byte[] password = PasswordHasher.hashPassword("testPass");
-        User expectedUser = new User();
-        expectedUser.setUsername(username);
-        expectedUser.setPassword(password);
+    @DisplayName("User is saved correctly")
+    void shouldSaveUser() {
+        UserEntity user = new UserEntity();
+        user.setUsername("test");
+        user.setPassword("testPass");
+        user.setRole(USER.name());
 
-        userRepository.save(expectedUser);
-        Optional<User> actualUser = userRepository.findByUsername(username);
+        assertThatCode(() -> userRepository.save(user)).doesNotThrowAnyException();
 
-        assertThat(actualUser).isPresent();
-        assertThat(actualUser.get().getUsername()).isEqualTo(expectedUser.getUsername());
-        assertThat(actualUser.get().getPassword()).isEqualTo(expectedUser.getPassword());
+        Optional<UserEntity> savedUser = userRepository.findByUsername(user.getUsername());
+
+        assertThat(savedUser).isPresent();
+        assertThat(savedUser.get().getUsername()).isEqualTo(user.getUsername());
+        assertThat(savedUser.get().getPassword()).isEqualTo(user.getPassword());
     }
 
     /**
@@ -71,22 +74,45 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
      * It asserts that a RuntimeException is thrown when trying to save a null user.
      */
     @Test
-    @DisplayName("Test that exception is thrown when saving null user")
-    void testSaveNullUser() {
-        assertThatThrownBy(() -> userRepository.save(null))
+    @DisplayName("Exception is thrown when saving null user")
+    void shouldThrowExceptionWhenSavingNullUser() {
+        Assertions.assertThatThrownBy(() -> userRepository.save(null))
                 .isInstanceOf(RuntimeException.class);
     }
 
     /**
-     * This test checks that the findByUsername method correctly handles the case where the user does not exist.
-     * It attempts to retrieve a user with a username that does not exist in the database.
-     * It asserts that the returned user is not present.
+     * Tests that the findRoleByUsername method correctly retrieves the role of a user given their username.
+     * Asserts that the returned role matches the expected role.
      */
     @Test
-    @DisplayName("Test that non-existing user is not retrieved")
-    void testFindByUsername_whenUserDoesNotExist() {
-        Optional<User> actualUser = userRepository.findByUsername("nonExistingUser");
+    @DisplayName("Role is retrieved correctly by username")
+    void shouldFindRoleByUsername() {
+        String username = "test_user";
+        Role role = userRepository.findRoleByUsername(username);
 
-        assertThat(actualUser).isNotPresent();
+        assertThat(role).isEqualTo(USER);
+    }
+
+    /**
+     * Tests that the update method correctly updates a user's details in the repository.
+     * It creates a new UserEntity, saves it to the repository, updates its role, and then updates it in the repository.
+     * It then retrieves the updated role from the repository and asserts that it matches the expected role.
+     */
+    @Test
+    @DisplayName("User is updated correctly")
+    void shouldUpdateUser() {
+        UserEntity user = new UserEntity();
+        user.setUsername("testUser");
+        user.setPassword("testPass");
+        user.setRole(USER.name());
+
+        userRepository.save(user);
+
+        user.setRole(ADMIN.name());
+        userRepository.update(user);
+
+        Role updatedRole = userRepository.findRoleByUsername(user.getUsername());
+
+        assertThat(updatedRole).isEqualTo(ADMIN);
     }
 }

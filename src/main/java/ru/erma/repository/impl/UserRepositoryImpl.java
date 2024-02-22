@@ -1,85 +1,71 @@
 package ru.erma.repository.impl;
 
-
-import ru.erma.config.DBConnectionProvider;
-import ru.erma.model.User;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+import ru.erma.model.Role;
+import ru.erma.model.UserEntity;
 import ru.erma.repository.UserRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+
 /**
- * The UserRepositoryImpl class provides an implementation of the UserRepository interface.
- * It provides methods to save and retrieve user records from the database.
+ * This class implements the UserRepository interface.
+ * It provides methods to find a user by username, to save a user, to find a role by username, to find a username, and to update a user.
+ * It uses the JdbcTemplate to execute SQL queries.
  */
-public class UserRepositoryImpl extends AbstractRepository implements UserRepository<String, User> {
+@Repository
+public class UserRepositoryImpl implements UserRepository<String, UserEntity> {
 
-    /**
-     * Constructs a new UserRepositoryImpl with the specified connection provider.
-     *
-     * @param connectionProvider the provider for database connections.
-     */
-    public UserRepositoryImpl(DBConnectionProvider connectionProvider) {
-        super(connectionProvider);
+    private final JdbcTemplate jdbcTemplate;
+
+    public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * Retrieves a user record for a specific username from the database.
-     * It selects the row from the users table where the username matches the provided username.
-     * If there is an error retrieving the user record, it throws a DatabaseException.
-     *
-     * @param username the username to find the user record for.
-     * @return an Optional containing the user record if found, or an empty Optional if not found.
-     * @throws RuntimeException if there is an error retrieving the user record.
-     */
     @Override
-    public Optional<User> findByUsername(String username) {
+    public Optional<UserEntity> findByUsername(String username) {
         String sql = "SELECT username, password FROM develop.users WHERE username = ?";
-        try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, username);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(getUserFromResultSet(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user by username: " + e.getMessage());
-        }
-        return Optional.empty();
+        List<UserEntity> users = jdbcTemplate.query(sql, new Object[]{username}, new UserRowMapper());
+        return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
 
-    /**
-     * Saves a user record to the database.
-     * It inserts a new row into the users table with the username, password from the user record.
-     * If the user record is null, it throws a DatabaseException.
-     *
-     * @param user the user record to save.
-     * @throws RuntimeException if the user record is null.
-     */
     @Override
-    public void save(User user) {
-        String sql = "INSERT INTO develop.users(username,password) VALUES (?,?)";
-        executeUpdate(sql, user.getUsername(), user.getPassword());
+    public void save(UserEntity user) {
+        String sql = "INSERT INTO develop.users(username,password,role) VALUES (?,?,?)";
+        jdbcTemplate.update(sql, user.getUsername(), user.getPassword(),user.getRole());
     }
 
-    /**
-     * Creates a User instance from a row in the result set.
-     * It gets the username, password, and salt from the result set and sets them in the User instance.
-     *
-     * @param resultSet the result set.
-     * @return a User instance with the username, password from the result set.
-     * @throws SQLException if there is an error getting the username or password from the result set.
-     */
-    private User getUserFromResultSet(ResultSet resultSet) throws SQLException {
-        User user = new User();
-        String username = resultSet.getString("username");
-        byte[] password = resultSet.getBytes("password");
+    @Override
+    public void update(UserEntity user) {
+        String sql = "UPDATE develop.users SET role = ? WHERE username = ?";
+        jdbcTemplate.update(sql, user.getRole(), user.getUsername());
+    }
 
-        user.setUsername(username);
-        user.setPassword(password);
-        return user;
+    @Override
+    public Optional<String> findUsername(String username) {
+        String sql = "SELECT username FROM develop.users WHERE username = ?";
+        List<String> usernames = jdbcTemplate.query(sql, new Object[]{username}, (rs, rowNum) -> rs.getString("username"));
+        return usernames.isEmpty() ? Optional.empty() : Optional.of(usernames.get(0));
+    }
+
+    @Override
+    public Role findRoleByUsername(String username) {
+        String sql = "SELECT role FROM develop.users WHERE username = ?";
+        String role = jdbcTemplate.queryForObject(sql, new Object[]{username}, String.class);
+        return Role.valueOf(role);
+    }
+
+    private static class UserRowMapper implements RowMapper<UserEntity> {
+        @Override
+        public UserEntity mapRow(ResultSet resultSet, int i) throws SQLException {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUsername(resultSet.getString("username"));
+            userEntity.setPassword(resultSet.getString("password"));
+            return userEntity;
+        }
     }
 }

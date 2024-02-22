@@ -10,6 +10,12 @@
             <column name="id" type="bigint" defaultValueComputed="nextval('develop.audit_id_seq')" remarks="Primary key using 'develop.audit_id_seq' sequence for unique ID generation.">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="username" type="varchar(255)" remarks="Stores the username of the user who performed the action.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="timestamp" remarks="Stores the timestamp when the action was performed.">
+                <constraints nullable="false"/>
+            </column>
             <column name="action" type="varchar(255)" remarks="Stores the specific audit event message.">
                 <constraints nullable="false"/>
             </column>

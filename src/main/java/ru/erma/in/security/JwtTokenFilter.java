@@ -1,59 +1,65 @@
 package ru.erma.in.security;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
 /**
- * The JwtTokenFilter class implements the Filter interface and is used to validate JWT (JSON Web Token) in the Authorization header of HTTP requests.
- * It is annotated with @WebFilter, which means it is automatically registered and applied to every request in the application.
+ * This class is a filter for JWT (JSON Web Token) authentication.
+ * It extends the GenericFilterBean class provided by Spring Security.
+ * The filter validates the JWT and authenticates the user.
+ * If the JWT is expired or malformed, the filter handles the exception by delegating to the CustomSecurityExceptionHandler.
  */
-@WebFilter
-public class JwtTokenFilter implements Filter {
+@AllArgsConstructor
+@Component
+public class JwtTokenFilter extends GenericFilterBean {
 
-    private JwtTokenProvider jwtTokenProvider;
+    private final CustomSecurityExceptionHandler exceptionHandler;
 
-    private ServletContext servletContext;
-
-    /**
-     * This method is called by the container to indicate to a filter that it is being placed into service.
-     * It initializes the JwtTokenProvider and ServletContext.
-     *
-     * @param filterConfig a filter configuration object used by a servlet container to pass information to a filter during initialization
-     * @throws ServletException if an exception occurs that interrupts the filter's normal operation
-     */
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        this.servletContext = filterConfig.getServletContext();
-        jwtTokenProvider = (JwtTokenProvider) servletContext.getAttribute("tokenProvider");
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
-     * This method is called by the container each time a request/response pair is passed through the chain due to a client request for a resource at the end of the chain.
-     * It extracts the JWT from the Authorization header of the request, validates it, and sets the authentication status in the ServletContext.
-     * If the JWT is null or invalid, it sets the authentication status to false with an appropriate message.
-     * If an exception occurs during the validation of the JWT, it sets the authentication status to false with the exception message.
+     * This method is called for each request to validate the JWT and authenticate the user.
+     * If the JWT is valid, the user is authenticated and the filter chain continues.
+     * If the JWT is expired or malformed, the exception is handled and the filter chain is not continued.
      *
-     * @param servletRequest the ServletRequest object contains the client's request
-     * @param servletResponse the ServletResponse object contains the servlet's response
-     * @param filterChain the FilterChain for invoking the next filter or the resource
-     * @throws IOException if an I/O error occurs during this filter's processing of the request
-     * @throws ServletException if the processing fails for any other reason
+     * @param servletRequest  the servlet request
+     * @param servletResponse the servlet response
+     * @param filterChain     the filter chain
+     * @throws IOException if an input or output error is detected when the handler is handling the exception
+     * @throws ServletException if the request could not be handled
+     * @throws ExpiredJwtException if the JWT is expired
      */
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        String bearerToken = ((HttpServletRequest)servletRequest).getHeader("Authorization");
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException, ExpiredJwtException {
+        String bearerToken = ((HttpServletRequest) servletRequest).getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7);
+        }
         try {
-            if (bearerToken != null && bearerToken.startsWith("Bearer ") && jwtTokenProvider.validateToken(bearerToken.substring(7))) {
-                Authentication authentication = jwtTokenProvider.authentication(bearerToken.substring(7));
-                servletContext.setAttribute("authentication", authentication);
-            } else {
-                servletContext.setAttribute("authentication", new Authentication(null, false, "Bearer token is null or invalid!"));
+            if (bearerToken != null && jwtTokenProvider.validateToken(bearerToken)) {
+                Authentication authentication = jwtTokenProvider.authentication(bearerToken);
+                if (authentication != null) {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
-        } catch (RuntimeException e) {
-            servletContext.setAttribute("authentication", new Authentication(null, false, e.getMessage()));
+        } catch (ExpiredJwtException | MalformedJwtException ex) {
+            exceptionHandler.handleSecurityException((HttpServletRequest) servletRequest,
+                    (HttpServletResponse) servletResponse,
+                     ex, HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
