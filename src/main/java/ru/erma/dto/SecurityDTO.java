@@ -1,11 +1,13 @@
 package ru.erma.dto;
 
-/**
- * The SecurityDTO class is a record class in Java.
- * It is used to represent a security data transfer object that contains a username and password.
- * It contains two fields: username and password.
- * The username field represents the username of the user.
- * The password field represents the password of the user.
- */
-public record SecurityDTO(String username, String password) {
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+
+@Schema(description = "Data object representing a security data transfer object that contains a username and password")
+public record SecurityDTO(
+        @Schema(description = "Username of the user", example = "john_doe")
+        @NotBlank(message = "Username must not be blank.") String username,
+
+        @Schema(description = "Password of the user", example = "password123")
+        @NotBlank(message = "Password must mot be blank.") String password) {
 }

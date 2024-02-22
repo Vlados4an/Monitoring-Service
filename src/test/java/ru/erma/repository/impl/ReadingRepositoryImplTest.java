@@ -8,6 +8,7 @@ import ru.erma.model.Reading;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -19,14 +20,14 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
     private ReadingRepositoryImpl readingRepository;
 
     /**
-     * The setUp method initializes the ReadingRepositoryImpl instance before each test.
-     * It calls the setUp method of the superclass to initialize the connection provider,
-     * and then creates a new ReadingRepositoryImpl with the connection provider.
+     * Sets up the ReadingRepositoryImpl instance before each test.
+     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
+     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
      */
     @BeforeEach
     void setUp() {
         super.setUp();
-        readingRepository = new ReadingRepositoryImpl(connectionProvider);
+        readingRepository = new ReadingRepositoryImpl(jdbcTemplate);
     }
 
     /**
@@ -119,5 +120,36 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
         List<Reading> readings = readingRepository.findByUsernameAndMonthAndYear("nonExistingUser", 1, 2022);
 
         assertThat(readings).isEmpty();
+    }
+
+    /**
+     * Tests that the findLatestByUsername method correctly retrieves the latest reading for a specific username from the database.
+     * Retrieves the latest reading for a username and asserts that the Optional is not empty and that the reading's month, year, and values match the expected values.
+     */
+    @Test
+    @DisplayName("Reading is retrieved correctly when latest reading for username exists")
+    void shouldFindLatestByUsernameWhenReadingExists() {
+        Optional<Reading> result = readingRepository.findLatestByUsername("test_user");
+        Reading reading = result.get();
+
+        assertThat(result).isNotEmpty();
+        assertThat(reading.getMonth()).isEqualTo(1);
+        assertThat(reading.getYear()).isEqualTo(2022);
+        assertThat(reading.getValues().get("heating")).isEqualTo(100);
+        assertThat(reading.getValues().get("cold_water")).isEqualTo(200);
+        assertThat(reading.getValues().get("hot_water")).isEqualTo(300);
+    }
+
+    /**
+     * Tests that the findLatestByUsername method correctly handles the case where there is no latest reading for a specific username in the database.
+     * Attempts to retrieve the latest reading for a username that does not exist in the database.
+     * Asserts that the returned Optional is empty.
+     */
+    @Test
+    @DisplayName("Empty optional is returned when no latest reading for username")
+    void shouldReturnEmptyOptionalWhenNoLatestReadingForUsername() {
+        Optional<Reading> result = readingRepository.findLatestByUsername("nonExistingUser");
+
+        assertThat(result).isEmpty();
     }
 }

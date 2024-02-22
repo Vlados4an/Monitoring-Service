@@ -1,59 +1,57 @@
 package ru.erma.repository.impl;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import ru.erma.config.DBConnectionProvider;
-import ru.erma.config.DBMigrationService;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 
 /**
- * The AbstractRepositoryForTest class provides a base for all repository test classes.
- * It sets up a PostgreSQL test container and a DBConnectionProvider before each test,
- * and performs a database migration using a DBMigrationService.
+ * This abstract class is used as a base for repository tests.
+ * It sets up a PostgreSQL test container and a JdbcTemplate for executing SQL queries.
  * The test container is started before all tests and stopped after all tests.
+ * Before each test, a new JdbcTemplate is created and the database schema is updated using Liquibase.
  */
+@Testcontainers
 public abstract class AbstractRepositoryForTest {
 
-    /**
-     * The PostgreSQL test container.
-     */
-    static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:16.1-alpine");
+    @Container
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine");
 
-    /**
-     * The provider for database connections.
-     */
-    protected DBConnectionProvider connectionProvider;
+    protected JdbcTemplate jdbcTemplate;
 
-    /**
-     * The setUp method initializes the DBConnectionProvider and performs a database migration before each test.
-     * It creates a new DBConnectionProvider with the JDBC URL, username, and password from the test container,
-     * and a new DBMigrationService with the connection provider.
-     * It then calls the migration method of the DBMigrationService to perform the migration.
-     */
     @BeforeEach
     void setUp() {
-        connectionProvider = new DBConnectionProvider(
-                container.getJdbcUrl(), container.getUsername(), container.getPassword(), container.getDriverClassName()
-        );
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl(postgreSQLContainer.getJdbcUrl());
+        dataSource.setUsername(postgreSQLContainer.getUsername());
+        dataSource.setPassword(postgreSQLContainer.getPassword());
 
-        DBMigrationService migrationService = new DBMigrationService(connectionProvider, "migration", "db.changelog/db.changelog-master.xml");
-        migrationService.migration();
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog("classpath:db.changelog/db.changelog-master.xml");
+        try {
+            liquibase.afterPropertiesSet();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    /**
-     * The init method starts the PostgreSQL test container before all tests.
-     */
     @BeforeAll
-    static void init() {
-        container.start();
+    static void beforeAll() {
+        postgreSQLContainer.start();
     }
 
-    /**
-     * The tearDown method stops the PostgreSQL test container after all tests.
-     */
     @AfterAll
-    static void tearDown() {
-        container.stop();
+    static void afterAll() {
+        postgreSQLContainer.stop();
     }
 }

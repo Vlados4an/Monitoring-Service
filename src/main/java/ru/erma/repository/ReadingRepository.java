@@ -1,6 +1,9 @@
 package ru.erma.repository;
 
+import ru.erma.model.Reading;
+
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This interface represents a repository for readings.
@@ -36,4 +39,12 @@ public interface ReadingRepository<K,E> {
      * @return a list of readings for the specified username, month, and year
      */
     List<E> findByUsernameAndMonthAndYear(K username, int month, int year);
+
+    /**
+     * Retrieves the latest reading for the specified username.
+     *
+     * @param username the username for which to retrieve the latest reading
+     * @return an Optional containing the latest reading for the specified username, or an empty Optional if no readings are found
+     */
+    Optional<Reading> findLatestByUsername(K username);
 }

@@ -1,42 +1,52 @@
 package ru.erma.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
  * The User class represents users in the system.
  * Each user has a username, password and a list of readings.
+ * This class implements the UserDetails interface provided by Spring Security.
+ * The UserDetails interface provides core user information required by Spring Security.
  */
-public class User {
-    private String username;
+public record User(UserEntity userEntity) implements UserDetails {
 
-    private byte[] password;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userEntity.getRole()));
+    }
 
-    private List<Reading> readings;
+    @Override
+    public String getPassword() {
+        return userEntity.getPassword();
+    }
 
-
-    public User() {}
-
+    @Override
     public String getUsername() {
-        return username;
+        return userEntity.getUsername();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public byte[] getPassword() {
-        return password;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setPassword(byte[] password) {
-        this.password = password;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public List<Reading> getReadings() {
-        return readings;
-    }
-
-    public void setReadings(List<Reading> readings) {
-        this.readings = readings;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

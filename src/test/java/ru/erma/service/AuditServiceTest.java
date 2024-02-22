@@ -6,16 +6,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.erma.exception.NotValidArgumentException;
+import ru.erma.dto.AuditListDTO;
+import ru.erma.exception.NoLogsFoundException;
+import ru.erma.mappers.AuditMapper;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 class AuditServiceTest {
+    @Mock
+    private AuditMapper auditMapper;
 
     /**
      * Mock of AuditRepository used in the tests.
@@ -38,45 +42,67 @@ class AuditServiceTest {
     private AuditService auditService;
 
     /**
-     * This test verifies that when the logAction method is called,
-     * it saves a new AuditLog with the provided action.
+     * Tests that the saveAudit method correctly saves an audit.
+     * It creates an audit, calls the saveAudit method with the audit, and verifies that the save method of the AuditRepository was called with the audit.
+     * Asserts that no exception is thrown when saving the audit.
      */
     @Test
-    @DisplayName("LogAction method saves a new Audit with the provided action")
-    void logAction_savesNewAuditLogWithAction() {
-        String action = "testAction";
-        auditService.logAction(action);
-        verify(auditRepository,times(1)).save(any(Audit.class));
+    @DisplayName("SaveAudit method saves the audit successfully")
+    void saveAudit_savesAuditSuccessfully() {
+        Audit audit = new Audit();
+        audit.setAction("action");
+        audit.setUsername("test");
+        audit.setTimestamp(LocalDateTime.now());
+
+        auditService.saveAudit(audit);
+
+        verify(auditRepository, times(1)).save(audit);
     }
 
     /**
-     * This test verifies that when the logAction method saves null,
-     * it throws NotValidArgumentException.
-     */
-    @Test
-    @DisplayName("Test that exception is thrown when saving null audit")
-    void logNullAction_throwsNotValidArgumentException() {
-        assertThatThrownBy(() -> auditService.logAction(null))
-                .isInstanceOf(NotValidArgumentException.class);
-    }
-
-    /**
-     * This test verifies that when the getAllAudits method is called,
-     * it returns all AuditLogs from the repository.
+     * Tests that the getAllAudits method correctly retrieves all audits.
+     * It creates two audits, saves them to the AuditRepository, and calls the getAllAudits method.
+     * Asserts that the returned AuditListDTO is not null, that it contains two audits, and that the audits match the expected audits.
      */
     @Test
     @DisplayName("GetAllAudits method returns all Audits from the repository")
-    void getAllAudits_returnsAllAuditLogsFromRepository(){
-        Audit log1 = new Audit();
-        log1.getAudits().add("action1");
-        Audit log2 = new Audit();
-        log2.getAudits().add("action2");
-        when(auditRepository.findAll()).thenReturn(Arrays.asList(log1,log2));
+    void getAllAudits_returnsAllAuditLogsFromRepository() {
+        Audit audit1 = new Audit();
+        audit1.setAction("action1");
+        audit1.setUsername("test");
+        audit1.setTimestamp(LocalDateTime.now());
+        Audit audit2 = new Audit();
+        audit2.setAction("action2");
+        audit1.setUsername("test");
+        audit1.setTimestamp(LocalDateTime.now());
 
-        List<Audit> allAudits = auditService.getAllAudits();
+        List<Audit> audits = List.of(audit1,audit2);
 
-        assertThat(allAudits).hasSize(2);
-        assertThat(allAudits.get(0).getAudits().get(0)).isEqualTo("action1");
-        assertThat(allAudits.get(1).getAudits().get(0)).isEqualTo("action2");
+        when(auditRepository.findAll()).thenReturn(audits);
+
+        AuditListDTO auditListDTO = new AuditListDTO();
+        auditListDTO.setAudits(audits);
+        when(auditMapper.toAuditListDTO(audits)).thenReturn(auditListDTO);
+
+        AuditListDTO allAudits = auditService.getAllAudits();
+
+        assertThat(allAudits).isNotNull();
+        assertThat(allAudits.getAudits()).hasSize(2);
+        assertThat(allAudits.getAudits().get(0)).isEqualTo(audit1);
+        assertThat(allAudits.getAudits().get(1)).isEqualTo(audit2);
+    }
+
+    /**
+     * Tests that the getAllAudits method correctly handles the case where there are no audits.
+     * It calls the getAllAudits method and asserts that a NoLogsFoundException is thrown with the message "No audit logs found".
+     */
+    @Test
+    @DisplayName("GetAllAudits method returns empty list when no audits are found")
+    void getAllAudits_throwsNoLogsFoundException() {
+        when(auditRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(()->auditService.getAllAudits())
+                .isInstanceOf(NoLogsFoundException.class)
+                .hasMessage("No audit logs found");
     }
 }

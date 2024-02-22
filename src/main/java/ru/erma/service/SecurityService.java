@@ -1,15 +1,21 @@
 package ru.erma.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import ru.erma.aop.annotations.Audit;
+import ru.erma.dto.JwtResponse;
 import ru.erma.dto.SecurityDTO;
 import ru.erma.exception.AuthorizeException;
 import ru.erma.exception.RegisterException;
-import ru.erma.dto.JwtResponse;
+import ru.erma.exception.UserNotFoundException;
 import ru.erma.in.security.JwtTokenProvider;
 import ru.erma.mappers.UserMapper;
-import ru.erma.model.User;
+import ru.erma.model.Role;
+import ru.erma.model.UserEntity;
 import ru.erma.repository.UserRepository;
-import ru.erma.util.PasswordHasher;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
@@ -18,22 +24,15 @@ import java.util.Optional;
  * The SecurityService class provides services related to user authentication and registration.
  * It uses a UserRepository to perform operations on User data and a JwtTokenProvider to create and validate JWT tokens.
  */
+@Service
+@RequiredArgsConstructor
 public class SecurityService {
 
-    private final UserRepository<String, User> userRepository;
-
+    private final UserRepository<String, UserEntity> userRepository;
+    private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-
-    /**
-     * Constructs a new SecurityService instance with the specified UserRepository and JwtTokenProvider.
-     *
-     * @param userRepository the UserRepository used to perform operations on User data
-     * @param tokenProvider the JwtTokenProvider used to create and validate JWT tokens
-     */
-    public SecurityService(UserRepository<String, User> userRepository, JwtTokenProvider tokenProvider) {
-        this.userRepository = userRepository;
-        this.tokenProvider = tokenProvider;
-    }
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     /**
      * Registers a new user with the specified username and password.
@@ -44,16 +43,16 @@ public class SecurityService {
      * @return the User object of the registered user
      * @throws RegisterException if a user with the specified username already exists
      */
-    @Audit(action = "User registered: ")
-    public User register(SecurityDTO securityDTO) {
+    @Audit(action = "User registered")
+    public UserEntity register(SecurityDTO securityDTO) {
         String username = securityDTO.username();
 
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
+        Optional<String> existingUsername = userRepository.findUsername(username);
+        if (existingUsername.isPresent()) {
             throw new RegisterException("The user with this username already exists.");
         }
 
-        User newUser = UserMapper.INSTANCE.toUser(securityDTO);
+        UserEntity newUser = userMapper.toUserEntity(securityDTO,passwordEncoder);
 
         userRepository.save(newUser);
         return newUser;
@@ -68,17 +67,20 @@ public class SecurityService {
      * @return a JwtResponse with the access token and refresh token
      * @throws AuthorizeException if the user does not exist or the password is incorrect
      */
-    @Audit(action = "User authorized: ")
+    @Audit(action = "User authorized")
     public JwtResponse authorization(SecurityDTO securityDTO) {
         String username = securityDTO.username();
         String password = securityDTO.password();
 
-        if (!verifyPassword(password,username)) {
-            throw new AuthorizeException("Incorrect password.");
-        }
+        userRepository.findUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
-        String accessToken = tokenProvider.createAccessToken(username);
-        String refreshToken = tokenProvider.createRefreshToken(username);
+        Role role = userRepository.findRoleByUsername(username);
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+        String accessToken = tokenProvider.createAccessToken(username, role);
+        String refreshToken = tokenProvider.createRefreshToken(username,role);
 
         try {
             tokenProvider.authentication(accessToken);
@@ -90,19 +92,19 @@ public class SecurityService {
     }
 
     /**
-     * Verifies the provided password against the stored password of the user with the given username.
+     * Assigns the role of admin to the user with the specified username.
+     * The method first retrieves the user from the UserRepository.
+     * If the user does not exist, it throws a UserNotFoundException.
+     * Then, it sets the user's role to ADMIN and updates the user in the UserRepository.
      *
-     * @param password the password provided by the user attempting to authenticate
-     * @param username the username of the user attempting to authenticate
-     * @return true if the provided password matches the stored password, false otherwise
-     * @throws AuthorizeException if no user with the given username exists in the database
+     * @param username the username of the user to assign the admin role
+     * @throws UserNotFoundException if the user does not exist
      */
-    private boolean verifyPassword(String password, String username) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isEmpty()) {
-            throw new AuthorizeException("There is no user with this username in the database.");
-        }
-            byte[] existingPlayerPassword = optionalUser.get().getPassword();
-            return PasswordHasher.checkPassword(password, existingPlayerPassword);
+    @Audit(action = "Assign new admin")
+    public void assignAdmin(String username) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+        user.setRole(Role.ADMIN.name());
+        userRepository.update(user);
     }
 }

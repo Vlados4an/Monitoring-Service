@@ -13,7 +13,10 @@
             <column name="username" type="varchar(255)" remarks="The username chosen by the user for login purposes, must be unique across the system.">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="password" type="bytea" remarks="Hashed representation of the user's password, used for authentication.">
+            <column name="password" type="varchar(255)" remarks="Hashed representation of the user's password, used for authentication.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(255)" remarks="Role of user">
                 <constraints nullable="false"/>
             </column>
         </createTable>
