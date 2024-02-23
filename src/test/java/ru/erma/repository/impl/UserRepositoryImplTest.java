@@ -4,8 +4,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.model.Role;
 import ru.erma.model.UserEntity;
+import ru.erma.repository.UserRepository;
 
 import java.util.Optional;
 
@@ -18,8 +22,11 @@ import static ru.erma.model.Role.USER;
  * The UserRepositoryImplTest class tests the functionality of the UserRepositoryImpl class.
  * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
-public class UserRepositoryImplTest extends AbstractRepositoryForTest {
-    private UserRepositoryImpl userRepository;
+public class UserRepositoryImplTest extends AbstractTestContainerConfig {
+    private UserRepository<String, UserEntity> userRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Sets up the UserRepositoryImpl instance before each test.
@@ -28,7 +35,6 @@ public class UserRepositoryImplTest extends AbstractRepositoryForTest {
      */
     @BeforeEach
     void setUp() {
-        super.setUp();
         userRepository = new UserRepositoryImpl(jdbcTemplate);
     }
 

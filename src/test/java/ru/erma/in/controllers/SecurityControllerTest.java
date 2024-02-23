@@ -1,16 +1,15 @@
 package ru.erma.in.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.dto.JwtResponse;
 import ru.erma.dto.SecurityDTO;
 import ru.erma.model.UserEntity;
@@ -23,27 +22,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-class SecurityControllerTest {
+@AutoConfigureMockMvc
+@WithMockUser(username = "testUser")
+class SecurityControllerTest extends AbstractTestContainerConfig {
 
-    @Mock
-    private SecurityService securityService;
-
-    @InjectMocks
-    private SecurityController securityController;
-
+    @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
     private ObjectMapper objectMapper;
 
-    /**
-     * Initializes the MockMvc and ObjectMapper instances before each test.
-     */
-    @BeforeEach
-    void setUp(){
-        mockMvc = MockMvcBuilders.standaloneSetup(securityController).build();
-        objectMapper = new ObjectMapper();
-    }
+    @MockBean
+    private SecurityService securityService;
 
     /**
      * Tests that the login method correctly returns a JwtResponse when the credentials are valid.
@@ -55,7 +45,7 @@ class SecurityControllerTest {
     @DisplayName("Login returns JwtResponse when credentials are valid")
     void login_returnsJwtResponseWhenCredentialsAreValid() throws Exception {
         SecurityDTO securityDTO = new SecurityDTO("testUser", "testPass");
-        JwtResponse jwtResponse = new JwtResponse("testUser", "accessToken","refreshToken");
+        JwtResponse jwtResponse = new JwtResponse("testUser", "accessToken", "refreshToken");
         when(securityService.authorization(securityDTO)).thenReturn(jwtResponse);
 
         mockMvc.perform(post("/auth/login")

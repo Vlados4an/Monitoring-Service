@@ -1,7 +1,9 @@
 package ru.erma.in.controllers;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,6 +53,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleReadingNotFoundException(ReadingNotFoundException ex ,WebRequest request) {
         return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(ValidationException ex, WebRequest request) {
+        return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST,request);
     }
 
     @ExceptionHandler(RegisterException.class)
@@ -108,7 +116,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception ex ,WebRequest request) {
-        return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+        return createErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     private ErrorResponse createErrorResponse(String message, HttpStatus status,WebRequest request) {
