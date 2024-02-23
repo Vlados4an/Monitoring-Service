@@ -3,7 +3,11 @@ package ru.erma.repository.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.model.Reading;
+import ru.erma.repository.ReadingRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +20,11 @@ import static org.assertj.core.api.Assertions.*;
  * The ReadingRepositoryImplTest class tests the functionality of the ReadingRepositoryImpl class.
  * It extends the AbstractRepositoryForTest class to reuse its setup logic.
  */
-public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
-    private ReadingRepositoryImpl readingRepository;
+public class ReadingRepositoryImplTest extends AbstractTestContainerConfig {
+    private ReadingRepository<String,Reading> readingRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Sets up the ReadingRepositoryImpl instance before each test.
@@ -26,7 +33,6 @@ public class ReadingRepositoryImplTest extends AbstractRepositoryForTest {
      */
     @BeforeEach
     void setUp() {
-        super.setUp();
         readingRepository = new ReadingRepositoryImpl(jdbcTemplate);
     }
 

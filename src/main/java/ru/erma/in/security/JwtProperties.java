@@ -2,9 +2,7 @@ package ru.erma.in.security;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import ru.erma.util.YamlPropertySourceFactory;
 
 
 /**
@@ -12,24 +10,23 @@ import ru.erma.util.YamlPropertySourceFactory;
  */
 @Component
 @Data
-@PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
 public class JwtProperties {
 
     /**
      * The secret key used for signing the JWT.
      */
-    @Value("${jwt.secret}")
+    @Value("${security.jwt.secret}")
     private String secret;
 
     /**
      * The expiration time (in milliseconds) of the access token.
      */
-    @Value("${jwt.access}")
+    @Value("${security.jwt.access}")
     private Long access;
 
     /**
      * The expiration time (in milliseconds) of the refresh token.
      */
-    @Value("${jwt.refresh}")
+    @Value("${security.jwt.refresh}")
     private Long refresh;
 }

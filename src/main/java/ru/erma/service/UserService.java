@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.erma.aop.annotations.Loggable;
+import ru.erma.customenableannotation.aop.annotation.ActionLogger;
 import ru.erma.exception.UserNotFoundException;
 import ru.erma.model.User;
 import ru.erma.model.UserEntity;
@@ -33,7 +33,7 @@ public class UserService implements UserDetailsService {
      * @return a User object containing the user's details
      * @throws UsernameNotFoundException if the user is not found
      */
-    @Loggable
+    @ActionLogger
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserEntity> optionalUserEntity = userRepository.findByUsername(username);
