@@ -42,7 +42,6 @@ class ReadingServiceTest {
     /**
      * The ReadingService instance under test, with mocked dependencies.
      */
-
     @Mock
     private ReadingMapper readingMapper;
 

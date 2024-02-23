@@ -19,14 +19,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
-public class AuditControllerServiceTest {
+public class AuditServiceTest {
     @Mock
     private AuditRepository<Audit> auditRepository;
     @Mock
     private AuditMapper auditMapper;
     @InjectMocks
-    private AuditControllerService auditService;
+    private AuditService auditService;
+
     /**
      * Tests that the getAllAudits method correctly retrieves all audits.
      * It creates two audits, saves them to the AuditRepository, and calls the getAllAudits method.

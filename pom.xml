@@ -35,7 +35,7 @@
     <dependency>
       <groupId>ru.erma</groupId>
       <artifactId>audit-spring-boot-starter</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
@@ -54,12 +54,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-json</artifactId>
     </dependency>
-    <dependency>
-      <groupId>net.lbruun.springboot</groupId>
-      <artifactId>preliquibase-spring-boot-starter</artifactId>
-      <version>1.5.0</version>
-    </dependency>
-
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

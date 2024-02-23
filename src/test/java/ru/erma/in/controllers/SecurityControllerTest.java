@@ -22,6 +22,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This class is responsible for testing the SecurityController.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
+ * It is annotated with @AutoConfigureMockMvc to set up a MockMvc instance.
+ * It is also annotated with @WithMockUser(username = "testUser") to set up a mock user for the tests.
+ */
 @AutoConfigureMockMvc
 @WithMockUser(username = "testUser")
 class SecurityControllerTest extends AbstractTestContainerConfig {
@@ -36,7 +42,7 @@ class SecurityControllerTest extends AbstractTestContainerConfig {
     private SecurityService securityService;
 
     /**
-     * Tests that the login method correctly returns a JwtResponse when the credentials are valid.
+     * This test checks if the login method of the SecurityController returns a JwtResponse when the credentials are valid.
      * It creates a SecurityDTO and a JwtResponse, mocks the authorization method of the SecurityService to return the JwtResponse,
      * performs a POST request to "/auth/login" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body matches the JwtResponse.
      * It also verifies that the authorization method of the SecurityService was called once with the SecurityDTO.
@@ -60,7 +66,7 @@ class SecurityControllerTest extends AbstractTestContainerConfig {
     }
 
     /**
-     * Tests that the registration method correctly returns a success response when the username is not taken.
+     * This test checks if the registration method of the SecurityController returns a success response when the username is not taken.
      * It creates a SecurityDTO and a UserEntity, mocks the register method of the SecurityService to return the UserEntity,
      * performs a POST request to "/auth/registration" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body contains the expected message.
      * It also verifies that the register method of the SecurityService was called once with the SecurityDTO.

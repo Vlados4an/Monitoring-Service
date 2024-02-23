@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 import ru.erma.aop.annotations.Audit;
-import ru.erma.service.AuditService;
+import ru.erma.service.AuditAspectService;
 import ru.erma.service.UsernameProvider;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 public class AuditAspect {
-    private final AuditService auditService;
+    private final AuditAspectService auditAspectService;
     private final UsernameProvider usernameProvider;
 
     @Pointcut("@annotation(audit)")
@@ -33,6 +33,6 @@ public class AuditAspect {
         String auditInfo = audit.action().isEmpty() ? "Called method " + methodName + " of class " + className : audit.action();
 
         ru.erma.model.Audit auditRecord = new ru.erma.model.Audit(username, LocalDateTime.now(), auditInfo);
-        auditService.saveAudit(auditRecord);
+        auditAspectService.saveAudit(auditRecord);
     }
 }

@@ -14,5 +14,11 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AuditMapper {
 
+    /**
+     * This method is used to convert a list of Audit objects into a list of AuditDTO objects.
+     *
+     * @param audits the list of Audit objects to convert
+     * @return a list of AuditDTO objects
+     */
     List<AuditDTO> toAuditListDTO(List<Audit> audits);
 }

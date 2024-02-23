@@ -12,7 +12,7 @@ import ru.erma.repository.AuditRepository;
  */
 @Service
 @RequiredArgsConstructor
-public class AuditAspectService implements AuditService {
+public class AuditAspectServiceImpl implements AuditAspectService {
 
     private final AuditRepository<Audit> auditRepository;
 

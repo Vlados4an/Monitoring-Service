@@ -1,10 +1,8 @@
 package ru.erma.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.model.Reading;
 import ru.erma.repository.ReadingRepository;
@@ -17,24 +15,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * The ReadingRepositoryImplTest class tests the functionality of the ReadingRepositoryImpl class.
- * It extends the AbstractRepositoryForTest class to reuse its setup logic.
+ * This class is responsible for testing the ReadingRepositoryImpl class.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
  */
 public class ReadingRepositoryImplTest extends AbstractTestContainerConfig {
-    private ReadingRepository<String,Reading> readingRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    /**
-     * Sets up the ReadingRepositoryImpl instance before each test.
-     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
-     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
-     */
-    @BeforeEach
-    void setUp() {
-        readingRepository = new ReadingRepositoryImpl(jdbcTemplate);
-    }
+    private ReadingRepository<String, Reading> readingRepository;
 
     /**
      * This test checks that the save method correctly saves a reading to the database.
@@ -44,7 +31,7 @@ public class ReadingRepositoryImplTest extends AbstractTestContainerConfig {
     @Test
     @DisplayName("Test that reading is saved correctly")
     void shouldSaveReading() {
-        Map<String,Integer> values = new HashMap<>();
+        Map<String, Integer> values = new HashMap<>();
         Reading reading = new Reading();
         reading.setMonth(1);
         reading.setYear(2022);

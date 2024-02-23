@@ -9,9 +9,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+/**
+ * This abstract class provides a base configuration for integration tests that use Testcontainers.
+ * It starts a PostgreSQL container before all tests and stops it after all tests.
+ */
 @SpringBootTest
 @Testcontainers
-@TestPropertySource(properties = "spring.liquibase.liquibase-schema=public")
 public abstract class AbstractTestContainerConfig {
 
     @Container
@@ -27,5 +30,4 @@ public abstract class AbstractTestContainerConfig {
     static void afterAll() {
         postgres.stop();
     }
-
 }

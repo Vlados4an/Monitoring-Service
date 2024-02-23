@@ -30,7 +30,7 @@ class AuditAspectServiceTest {
      * The AuditService instance under test, with mocked dependencies.
      */
     @InjectMocks
-    private AuditAspectService auditService;
+    private AuditAspectServiceImpl auditService;
 
     /**
      * Tests that the saveAudit method correctly saves an audit.

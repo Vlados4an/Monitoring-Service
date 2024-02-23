@@ -12,19 +12,19 @@ import static org.mockito.Mockito.mock;
  * The ReadingStructureServiceTest class tests the functionality of the ReadingStructureService class.
  * It uses Mockito to create a mock ReadingTypeRepository for testing.
  */
-
 class ReadingStructureServiceTest {
     private ReadingStructureService readingStructureService;
+
     /**
      * The setUp method initializes the ReadingStructureService instance before each test.
      * It creates a mock ReadingTypeRepository and passes it to the ReadingStructureService constructor.
      */
-
     @BeforeEach
     void setUp() {
         ReadingTypeRepository readingTypeRepository = mock(ReadingTypeRepository.class);
         readingStructureService = new ReadingStructureService(readingTypeRepository);
     }
+
     /**
      * This test checks that the addReadingType method correctly adds a new type to the list.
      * It adds a type to the list and then asserts that the list contains the added type.
@@ -36,6 +36,7 @@ class ReadingStructureServiceTest {
 
         assertThat(readingStructureService.getReadingTypes()).contains("gas");
     }
+
     /**
      * This test checks that the removeReadingType method correctly removes an existing type from the list.
      * It removes a type from the list and then asserts that the list does not contain the removed type.
