@@ -17,9 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * This class tests the AdminController class.
- * It uses the Mockito framework for mocking objects and JUnit for running the tests.
- * The class is annotated with @ExtendWith(MockitoExtension.class) to integrate Mockito and JUnit.
+ * This class is responsible for testing the AdminController.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
+ * It is annotated with @AutoConfigureMockMvc to set up a MockMvc instance.
+ * It is also annotated with @WithMockUser(roles = "ADMIN") to set up a mock user for the tests.
  */
 @AutoConfigureMockMvc
 @WithMockUser(roles = "ADMIN")
@@ -32,12 +33,9 @@ class AdminControllerTest extends AbstractTestContainerConfig {
     private ObjectMapper objectMapper;
 
     /**
-     * Tests that the getAllAudits method correctly retrieves all audits.
-     * It creates an AuditListDTO, mocks the getAllAudits method of the AuditService to return the AuditListDTO,
-     * performs a GET request to "/admin/audits", and asserts that the status is OK and that the response body exists.
-     * It also verifies that the getAllAudits method of the AuditService was called once.
+     * This test checks if the getAllAudits method of the AdminController returns all audits.
+     * It performs a GET request to "/admin/audits" and expects the status to be OK and the response body to exist.
      */
-
     @Test
     @DisplayName("GetAllAudits returns all audits")
     void getAllAudits_returnsAllAudits() throws Exception {
@@ -47,12 +45,10 @@ class AdminControllerTest extends AbstractTestContainerConfig {
     }
 
     /**
-     * Tests that the addReadingType method correctly adds a reading type.
+     * This test checks if the addReadingType method of the AdminController adds a reading type successfully.
      * It creates an AdminRequest, converts it to JSON, performs a POST request to "/admin" with the JSON as the request body,
-     * and asserts that the status is OK and that the response body contains the expected message.
-     * It also verifies that the addReadingType method of the ReadingStructureService was called once with the correct argument.
+     * and expects the status to be OK and the response body to contain the message "Reading type added successfully!".
      */
-
     @Test
     @DisplayName("AddReadingType adds a reading type successfully")
     void addReadingType_addsReadingTypeSuccessfully() throws Exception {
@@ -66,6 +62,11 @@ class AdminControllerTest extends AbstractTestContainerConfig {
                 .andExpect(jsonPath("$.message").value("Reading type added successfully!"));
     }
 
+    /**
+     * This test checks if the addReadingType method of the AdminController returns a 400 status for an invalid request.
+     * It creates an invalid JSON string, performs a POST request to "/admin" with the JSON as the request body,
+     * and expects the status to be 400 (Bad Request).
+     */
     @Test
     @DisplayName("AddReadingType returns 400 for invalid request")
     void addReadingType_returns400ForInvalidRequest() throws Exception {
@@ -77,10 +78,11 @@ class AdminControllerTest extends AbstractTestContainerConfig {
                 .andExpect(status().isBadRequest());
     }
 
-
-
-
-
+    /**
+     * This test checks if the removeReadingType method of the AdminController returns a 404 status for a non-existing type.
+     * It creates a string for a non-existing type, performs a DELETE request to "/admin/{type}",
+     * and expects the status to be 404 (Not Found).
+     */
     @Test
     @DisplayName("RemoveReadingType returns 404 for non-existing type")
     void removeReadingType_returns404ForNonExistingType() throws Exception {
@@ -91,10 +93,9 @@ class AdminControllerTest extends AbstractTestContainerConfig {
     }
 
     /**
-     * Tests that the removeReadingType method correctly removes a reading type.
-     * It creates a reading type, mocks the removeReadingType method of the ReadingStructureService to return true,
-     * performs a DELETE request to "/admin/{type}", and asserts that the status is OK and that the response body contains the expected message.
-     * It also verifies that the removeReadingType method of the ReadingStructureService was called once with the correct argument.
+     * This test checks if the removeReadingType method of the AdminController removes a reading type successfully.
+     * It creates a string for a type, performs a DELETE request to "/admin/{type}",
+     * and expects the status to be OK and the response body to contain the message "Reading type removed successfully!".
      */
     @Test
     @DisplayName("RemoveReadingType removes a reading type successfully")
@@ -107,10 +108,9 @@ class AdminControllerTest extends AbstractTestContainerConfig {
     }
 
     /**
-     * Tests that the assignAdmin method correctly assigns a user as admin.
+     * This test checks if the assignAdmin method of the AdminController assigns a user as admin successfully.
      * It creates an AssignDTO, converts it to JSON, performs a PUT request to "/admin" with the JSON as the request body,
-     * and asserts that the status is OK and that the response body contains the expected message.
-     * It also verifies that the assignAdmin method of the SecurityService was called once with the correct argument.
+     * and expects the status to be OK and the response body to contain the message "User with username {username} successfully assigned the admin role.".
      */
     @Test
     @DisplayName("AssignAdmin assigns user as admin successfully")
@@ -126,6 +126,11 @@ class AdminControllerTest extends AbstractTestContainerConfig {
 
     }
 
+    /**
+     * This test checks if the assignAdmin method of the AdminController returns a 400 status for an invalid request.
+     * It creates an invalid JSON string, performs a PUT request to "/admin" with the JSON as the request body,
+     * and expects the status to be 400 (Bad Request).
+     */
     @Test
     @DisplayName("AssignAdmin returns 400 for invalid request")
     void assignAdmin_returns400ForInvalidRequest() throws Exception {
@@ -137,6 +142,11 @@ class AdminControllerTest extends AbstractTestContainerConfig {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * This test checks if the addReadingType method of the AdminController returns a 403 status for a non-admin user.
+     * It creates an AdminRequest, converts it to JSON, performs a POST request to "/admin" with the JSON as the request body,
+     * and expects the status to be 403 (Forbidden).
+     */
     @Test
     @WithMockUser(roles = "USER")
     @DisplayName("AddReadingType returns 403 for non-admin user")

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.erma.dto.*;
 import ru.erma.exception.TypeNotFoundException;
-import ru.erma.service.AuditControllerService;
+import ru.erma.service.AuditService;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.service.SecurityService;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
-    private final AuditControllerService auditService;
+    private final AuditService auditService;
     private final ReadingStructureService readingStructureService;
     private final SecurityService securityService;
 

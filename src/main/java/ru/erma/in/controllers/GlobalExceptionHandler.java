@@ -3,7 +3,6 @@ package ru.erma.in.controllers;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

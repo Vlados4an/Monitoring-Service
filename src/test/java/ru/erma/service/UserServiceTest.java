@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
     /**
      * Mock of UserRepository used in the tests.
      */

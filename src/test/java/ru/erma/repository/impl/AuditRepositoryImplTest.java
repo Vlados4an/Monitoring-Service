@@ -13,8 +13,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * This class tests the AuditRepositoryImpl class.
- * It extends AbstractRepositoryForTest to use its setup for database and JdbcTemplate.
+ * This class is responsible for testing the AuditRepositoryImpl class.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
  */
 public class AuditRepositoryImplTest extends AbstractTestContainerConfig {
 

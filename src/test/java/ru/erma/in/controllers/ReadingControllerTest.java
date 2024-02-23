@@ -20,9 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * This class tests the ReadingController class.
- * It uses the Mockito framework for mocking objects and JUnit for running the tests.
- * The class is annotated with @ExtendWith(MockitoExtension.class) to integrate Mockito and JUnit.
+ * This class is responsible for testing the ReadingController.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
+ * It is annotated with @AutoConfigureMockMvc to set up a MockMvc instance.
+ * It is also annotated with @WithMockUser(username = "test_user") to set up a mock user for the tests.
  */
 @AutoConfigureMockMvc
 @WithMockUser(username = "test_user")
@@ -34,6 +35,10 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * This test checks if the getActualReadings method of the ReadingController returns actual readings for a user.
+     * It performs a GET request to "/readings/actual/{username}" and expects the status to be OK and the response body to exist.
+     */
     @Test
     @DisplayName("GetActualReadings returns actual readings for a user")
     void getActualReadings_returnsActualReadingsForUser() throws Exception {
@@ -44,6 +49,10 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                 .andExpect(jsonPath("$").exists());
     }
 
+    /**
+     * This test checks if the getActualReadings method of the ReadingController returns a 401 status for a non-authorized user.
+     * It performs a GET request to "/readings/actual/{username}" and expects the status to be 401 (Unauthorized) and the response body to contain the message "Username in the request does not match the username in the token.".
+     */
     @Test
     @DisplayName("GetActualReadings returns 401 for non-authorized user")
     void getActualReadings_returnsUnauthorized() throws Exception {
@@ -54,6 +63,10 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                 .andExpect(jsonPath("$.message").value("Username in the request does not match the username in the token."));
     }
 
+    /**
+     * This test checks if the getReadingsHistory method of the ReadingController returns a 401 status for a non-authorized user.
+     * It performs a GET request to "/readings/history/{username}" and expects the status to be 401 (Unauthorized) and the response body to contain the message "Username in the request does not match the username in the token.".
+     */
     @Test
     @DisplayName("GetReadingsHistory returns 401 for non-authorized user")
     void getReadingsHistory_returnsUnauthorized() throws Exception {
@@ -64,6 +77,10 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                 .andExpect(jsonPath("$.message").value("Username in the request does not match the username in the token."));
     }
 
+    /**
+     * This test checks if the getReadingsForMonth method of the ReadingController returns a 401 status for a non-authorized user.
+     * It performs a GET request to "/readings/{username}/{month}/{year}" and expects the status to be 401 (Unauthorized) and the response body to contain the message "Username in the request does not match the username in the token.".
+     */
     @Test
     @DisplayName("GetReadingsForMonth returns 401 for non-authorized user")
     void getReadingsForMonth_returnsUnauthorized() throws Exception {
@@ -75,10 +92,8 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
 
 
     /**
-     * Tests that the getReadingsHistory method correctly retrieves all readings for a user.
-     * It creates a ReadingListDTO, mocks the getReadingHistory method of the ReadingService to return the ReadingListDTO,
-     * performs a GET request to "/readings/history/{username}", and asserts that the status is OK and that the response body exists.
-     * It also verifies that the getReadingHistory method of the ReadingService was called once.
+     * This test checks if the getReadingsHistory method of the ReadingController returns history readings for a user.
+     * It performs a GET request to "/readings/history/{username}" and expects the status to be OK and the response body to exist.
      */
     @Test
     @DisplayName("GetReadingsHistory returns history readings for a user")
@@ -88,14 +103,11 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
         mockMvc.perform(get("/readings/history/" + username))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists());
-
     }
 
     /**
-     * Tests that the getReadingsForMonth method correctly retrieves all readings for a specific month for a user.
-     * It creates a ReadingListDTO, mocks the getReadingsForMonth method of the ReadingService to return the ReadingListDTO,
-     * performs a GET request to "/readings/{username}/{month}/{year}", and asserts that the status is OK and that the response body exists.
-     * It also verifies that the getReadingsForMonth method of the ReadingService was called once.
+     * This test checks if the getReadingsForMonth method of the ReadingController returns readings for a specific month for a user.
+     * It performs a GET request to "/readings/{username}/{month}/{year}" and expects the status to be OK and the response body to exist.
      */
     @Test
     @DisplayName("GetReadingsForMonth returns readings for a specific month")
@@ -104,14 +116,12 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
         mockMvc.perform(get("/readings/test_user/1/2022"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists());
-
     }
 
     /**
-     * Tests that the submitReadings method correctly submits readings for a user.
+     * This test checks if the submitReadings method of the ReadingController submits readings for a user.
      * It creates a ReadingRequest, converts it to JSON, performs a POST request to "/readings" with the JSON as the request body,
-     * and asserts that the status is OK and that the response body contains the expected message.
-     * It also verifies that the submitReadings method of the ReadingService was called once.
+     * and expects the status to be OK and the response body to contain the message "Reading submitted successfully!".
      */
     @Test
     @DisplayName("SubmitReadings submits readings for a user")
@@ -125,9 +135,13 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                         .content(readingJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Reading submitted successfully!"));
-
     }
 
+    /**
+     * This test checks if the submitReadings method of the ReadingController returns a 400 status for an invalid request.
+     * It creates an invalid JSON string, performs a POST request to "/readings" with the JSON as the request body,
+     * and expects the status to be 400 (Bad Request).
+     */
     @Test
     @DisplayName("SubmitReadings returns 400 for invalid request")
     void submitReadings_returns400ForInvalidRequest() throws Exception {
@@ -139,6 +153,11 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * This test checks if the submitReadings method of the ReadingController returns a 403 status for a user with an unknown role.
+     * It creates a ReadingRequest, converts it to JSON, performs a POST request to "/readings" with the JSON as the request body,
+     * and expects the status to be 403 (Forbidden).
+     */
     @Test
     @WithMockUser(roles = "UnknownRole")
     @DisplayName("SubmitReadings returns forbidden")
@@ -151,7 +170,5 @@ class ReadingControllerTest extends AbstractTestContainerConfig {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(readingJson))
                 .andExpect(status().isForbidden());
-
     }
-
 }

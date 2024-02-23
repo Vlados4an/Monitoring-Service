@@ -1,11 +1,9 @@
 package ru.erma.repository.impl;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.model.Role;
 import ru.erma.model.UserEntity;
@@ -19,24 +17,13 @@ import static ru.erma.model.Role.ADMIN;
 import static ru.erma.model.Role.USER;
 
 /**
- * The UserRepositoryImplTest class tests the functionality of the UserRepositoryImpl class.
- * It extends the AbstractRepositoryForTest class to reuse its setup logic.
+ * This class is responsible for testing the UserRepositoryImpl class.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
  */
 public class UserRepositoryImplTest extends AbstractTestContainerConfig {
-    private UserRepository<String, UserEntity> userRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    /**
-     * Sets up the UserRepositoryImpl instance before each test.
-     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
-     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
-     */
-    @BeforeEach
-    void setUp() {
-        userRepository = new UserRepositoryImpl(jdbcTemplate);
-    }
+    private UserRepository<String, UserEntity> userRepository;
 
     /**
      * This test checks that the findByUsername method correctly retrieves a user from the database.

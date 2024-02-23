@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
+
 /**
  * The SecurityServiceTest class provides unit tests for the SecurityService class.
  * It uses Mockito to mock the UserRepository and JwtTokenProvider dependencies of SecurityService.
