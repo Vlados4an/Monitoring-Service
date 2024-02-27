@@ -1,9 +1,11 @@
 package ru.erma.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.model.Audit;
+import ru.erma.repository.AuditRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,23 +13,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * This class tests the AuditRepositoryImpl class.
- * It extends AbstractRepositoryForTest to use its setup for database and JdbcTemplate.
+ * This class is responsible for testing the AuditRepositoryImpl class.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
  */
-public class AuditRepositoryImplTest extends AbstractRepositoryForTest {
+public class AuditRepositoryImplTest extends AbstractTestContainerConfig {
 
-    private AuditRepositoryImpl auditRepository;
-
-    /**
-     * Sets up the AuditRepositoryImpl instance before each test.
-     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
-     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
-     */
-    @BeforeEach
-    void setUp() {
-        super.setUp();
-        auditRepository = new AuditRepositoryImpl(jdbcTemplate);
-    }
+    @Autowired
+    private AuditRepository<Audit> auditRepository;
 
     /**
      * Tests that the save method correctly saves an audit to the database.

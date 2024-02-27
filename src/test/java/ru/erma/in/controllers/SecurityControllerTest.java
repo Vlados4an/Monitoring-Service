@@ -1,16 +1,15 @@
 package ru.erma.in.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.erma.config.AbstractTestContainerConfig;
 import ru.erma.dto.JwtResponse;
 import ru.erma.dto.SecurityDTO;
 import ru.erma.model.UserEntity;
@@ -23,30 +22,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-class SecurityControllerTest {
+/**
+ * This class is responsible for testing the SecurityController.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
+ * It is annotated with @AutoConfigureMockMvc to set up a MockMvc instance.
+ * It is also annotated with @WithMockUser(username = "testUser") to set up a mock user for the tests.
+ */
+@AutoConfigureMockMvc
+@WithMockUser(username = "testUser")
+class SecurityControllerTest extends AbstractTestContainerConfig {
 
-    @Mock
-    private SecurityService securityService;
-
-    @InjectMocks
-    private SecurityController securityController;
-
+    @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
     private ObjectMapper objectMapper;
 
-    /**
-     * Initializes the MockMvc and ObjectMapper instances before each test.
-     */
-    @BeforeEach
-    void setUp(){
-        mockMvc = MockMvcBuilders.standaloneSetup(securityController).build();
-        objectMapper = new ObjectMapper();
-    }
+    @MockBean
+    private SecurityService securityService;
 
     /**
-     * Tests that the login method correctly returns a JwtResponse when the credentials are valid.
+     * This test checks if the login method of the SecurityController returns a JwtResponse when the credentials are valid.
      * It creates a SecurityDTO and a JwtResponse, mocks the authorization method of the SecurityService to return the JwtResponse,
      * performs a POST request to "/auth/login" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body matches the JwtResponse.
      * It also verifies that the authorization method of the SecurityService was called once with the SecurityDTO.
@@ -55,7 +51,7 @@ class SecurityControllerTest {
     @DisplayName("Login returns JwtResponse when credentials are valid")
     void login_returnsJwtResponseWhenCredentialsAreValid() throws Exception {
         SecurityDTO securityDTO = new SecurityDTO("testUser", "testPass");
-        JwtResponse jwtResponse = new JwtResponse("testUser", "accessToken","refreshToken");
+        JwtResponse jwtResponse = new JwtResponse("testUser", "accessToken", "refreshToken");
         when(securityService.authorization(securityDTO)).thenReturn(jwtResponse);
 
         mockMvc.perform(post("/auth/login")
@@ -70,7 +66,7 @@ class SecurityControllerTest {
     }
 
     /**
-     * Tests that the registration method correctly returns a success response when the username is not taken.
+     * This test checks if the registration method of the SecurityController returns a success response when the username is not taken.
      * It creates a SecurityDTO and a UserEntity, mocks the register method of the SecurityService to return the UserEntity,
      * performs a POST request to "/auth/registration" with the SecurityDTO as the request body, and asserts that the status is OK and that the response body contains the expected message.
      * It also verifies that the register method of the SecurityService was called once with the SecurityDTO.

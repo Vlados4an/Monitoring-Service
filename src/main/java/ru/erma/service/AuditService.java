@@ -2,7 +2,7 @@ package ru.erma.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.erma.dto.AuditListDTO;
+import ru.erma.dto.AuditDTO;
 import ru.erma.exception.NoLogsFoundException;
 import ru.erma.mappers.AuditMapper;
 import ru.erma.model.Audit;
@@ -11,32 +11,26 @@ import ru.erma.repository.AuditRepository;
 import java.util.List;
 
 /**
- * This class provides services related to Audit operations.
- * It uses an AuditRepository to perform operations on Audit data.
+ * This class provides services related to Audit operations for the controller.
+ * It uses an AuditRepository to perform operations on Audit data and an AuditMapper to convert between Audit and AuditDTO objects.
  */
 @Service
 @RequiredArgsConstructor
 public class AuditService {
 
     private final AuditRepository<Audit> auditRepository;
+
     private final AuditMapper mapper;
 
     /**
-     * Saves the given audit record to the AuditRepository.
+     * This method is used to retrieve all audit records from the database.
+     * It uses the AuditRepository's findAll method to do this.
      *
-     * @param audit the audit record to save
-     */
-    public void saveAudit(Audit audit) {
-        auditRepository.save(audit);
-    }
-
-    /**
-     * Retrieves all Audit objects from the AuditRepository.
-     *
-     * @return a list of all Audit objects
+     * @return a list of AuditDTO objects representing all audits in the database
+     * @throws NoLogsFoundException if no audits are found in the database
      */
     @ru.erma.aop.annotations.Audit(action = "Admin viewed all audits")
-    public AuditListDTO getAllAudits(){
+    public List<AuditDTO> getAllAudits(){
         List<Audit> audits = auditRepository.findAll();
         if (audits.isEmpty()) {
             throw new NoLogsFoundException("No audit logs found");

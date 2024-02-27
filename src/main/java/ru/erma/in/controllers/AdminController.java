@@ -9,14 +9,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.erma.dto.AdminRequest;
-import ru.erma.dto.AssignDTO;
-import ru.erma.dto.AuditListDTO;
-import ru.erma.dto.SuccessResponse;
+import ru.erma.dto.*;
 import ru.erma.exception.TypeNotFoundException;
 import ru.erma.service.AuditService;
 import ru.erma.service.ReadingStructureService;
 import ru.erma.service.SecurityService;
+
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class AdminController {
 
     @Operation(summary = "Get all audits")
     @GetMapping("/audits")
-    public ResponseEntity<AuditListDTO> getAllAudits(){
+    public ResponseEntity<List<AuditDTO>> getAllAudits(){
         return ResponseEntity.ok(auditService.getAllAudits());
     }
 

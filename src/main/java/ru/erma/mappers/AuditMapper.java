@@ -1,7 +1,7 @@
 package ru.erma.mappers;
 
 import org.mapstruct.Mapper;
-import ru.erma.dto.AuditListDTO;
+import ru.erma.dto.AuditDTO;
 import ru.erma.model.Audit;
 
 import java.util.List;
@@ -15,15 +15,10 @@ import java.util.List;
 public interface AuditMapper {
 
     /**
-     * This method converts a list of Audit objects to an AuditListDTO object.
-     * The AuditListDTO object contains the list of Audit objects.
+     * This method is used to convert a list of Audit objects into a list of AuditDTO objects.
      *
-     * @param audits the list of Audit objects
-     * @return the AuditListDTO object
+     * @param audits the list of Audit objects to convert
+     * @return a list of AuditDTO objects
      */
-    default AuditListDTO toAuditListDTO(List<Audit> audits) {
-        AuditListDTO auditListDTO = new AuditListDTO();
-        auditListDTO.setAudits(audits);
-        return auditListDTO;
-    }
+    List<AuditDTO> toAuditListDTO(List<Audit> audits);
 }

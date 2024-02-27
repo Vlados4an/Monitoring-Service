@@ -25,6 +25,7 @@ import java.util.List;
 public class ReadingService {
 
     private final ReadingRepository<String, Reading> readingRepository;
+
     private final ReadingMapper readingMapper;
 
     /**
@@ -35,7 +36,6 @@ public class ReadingService {
      *
      * @param request the ReadingRequest containing the readings to be submitted
      */
-
     @Audit(action = "User submitted readings")
     public void submitReadings(ReadingRequest request) {
         List<Reading> existingReading = readingRepository.findByUsernameAndMonthAndYear(request.username(),request.month(),request.year());
@@ -56,7 +56,6 @@ public class ReadingService {
      * @param year     the year of the readings
      * @return a list of readings for the specified username, month, and year
      */
-
     @Audit(action = "User viewed readings for month")
     public ReadingListDTO getReadingsForMonth(String username, Integer month, Integer year){
         List<Reading> userReadings = readingRepository.findByUsernameAndMonthAndYear(username, month, year);
@@ -72,7 +71,6 @@ public class ReadingService {
      * @param username the username of the user
      * @return a list of all readings for the specified username
      */
-
     @Audit(action = "User viewed reading history")
     public ReadingListDTO getReadingHistory(String username) {
         List<Reading> readings = getUserReadings(username);
@@ -86,7 +84,6 @@ public class ReadingService {
      * @param username the username of the user
      * @return the most recent Reading object for the specified username, or null if no readings exist
      */
-
     @Audit(action = "User viewed actual readings")
     public ReadingDTO getActualReadings(String username) {
         Reading reading = readingRepository.findLatestByUsername(username)

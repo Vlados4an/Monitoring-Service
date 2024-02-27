@@ -1,29 +1,22 @@
 package ru.erma.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.erma.config.AbstractTestContainerConfig;
+import ru.erma.repository.ReadingTypeRepository;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * The ReadingTypeRepositoryImplTest class tests the functionality of the ReadingTypeRepositoryImpl class.
- * It extends the AbstractRepositoryForTest class to reuse its setup logic.
+ * This class is responsible for testing the ReadingTypeRepositoryImpl class.
+ * It extends AbstractTestContainerConfig to use a PostgreSQL test container.
  */
-public class ReadingTypeRepositoryImplTest extends AbstractRepositoryForTest {
-    private ReadingTypeRepositoryImpl readingTypeRepository;
+public class ReadingTypeRepositoryImplTest extends AbstractTestContainerConfig {
 
-    /**
-     * Sets up the ReadingTypeRepositoryImpl instance before each test.
-     * Calls the setUp method of the superclass to initialize the JdbcTemplate,
-     * and then creates a new AuditRepositoryImpl with the JdbcTemplate.
-     */
-    @BeforeEach
-    void setUp() {
-        super.setUp();
-        readingTypeRepository = new ReadingTypeRepositoryImpl(jdbcTemplate);
-    }
+    @Autowired
+    private ReadingTypeRepository<String> readingTypeRepository;
 
     /**
      * This test checks that the addColumnToReadingsTable method correctly adds a column to the readings table.
