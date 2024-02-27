@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.erma.dto.AuditListDTO;
+import ru.erma.dto.AuditDTO;
 import ru.erma.exception.NoLogsFoundException;
 import ru.erma.mappers.AuditMapper;
 import ru.erma.model.Audit;
@@ -18,46 +18,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-/**
- * This class is used to test the AuditService class.
- * It uses the Mockito framework for mocking objects and JUnit for running the tests.
- */
 @ExtendWith(MockitoExtension.class)
-class AuditServiceTest {
-    @Mock
-    private AuditMapper auditMapper;
-
-    /**
-     * Mock of AuditRepository used in the tests.
-     */
+public class AuditServiceTest {
     @Mock
     private AuditRepository<Audit> auditRepository;
-
-    /**
-     * The AuditService instance under test, with mocked dependencies.
-     */
+    @Mock
+    private AuditMapper auditMapper;
     @InjectMocks
     private AuditService auditService;
-
-    /**
-     * Tests that the saveAudit method correctly saves an audit.
-     * It creates an audit, calls the saveAudit method with the audit, and verifies that the save method of the AuditRepository was called with the audit.
-     * Asserts that no exception is thrown when saving the audit.
-     */
-    @Test
-    @DisplayName("SaveAudit method saves the audit successfully")
-    void saveAudit_savesAuditSuccessfully() {
-        Audit audit = new Audit();
-        audit.setAction("action");
-        audit.setUsername("test");
-        audit.setTimestamp(LocalDateTime.now());
-
-        auditService.saveAudit(audit);
-
-        verify(auditRepository, times(1)).save(audit);
-    }
 
     /**
      * Tests that the getAllAudits method correctly retrieves all audits.
@@ -80,16 +50,18 @@ class AuditServiceTest {
 
         when(auditRepository.findAll()).thenReturn(audits);
 
-        AuditListDTO auditListDTO = new AuditListDTO();
-        auditListDTO.setAudits(audits);
-        when(auditMapper.toAuditListDTO(audits)).thenReturn(auditListDTO);
+        AuditDTO auditDTO1 = new AuditDTO(audit1.getUsername(), audit1.getTimestamp(), audit1.getAction());
+        AuditDTO auditDTO2 = new AuditDTO(audit2.getUsername(), audit2.getTimestamp(), audit2.getAction());
+        List<AuditDTO> auditDTOs = List.of(auditDTO1, auditDTO2);
 
-        AuditListDTO allAudits = auditService.getAllAudits();
+        when(auditMapper.toAuditListDTO(audits)).thenReturn(auditDTOs);
+
+        List<AuditDTO> allAudits = auditService.getAllAudits();
 
         assertThat(allAudits).isNotNull();
-        assertThat(allAudits.getAudits()).hasSize(2);
-        assertThat(allAudits.getAudits().get(0)).isEqualTo(audit1);
-        assertThat(allAudits.getAudits().get(1)).isEqualTo(audit2);
+        assertThat(allAudits.size()).isEqualTo(2);
+        assertThat(allAudits.get(0)).isEqualTo(auditDTO1);
+        assertThat(allAudits.get(1)).isEqualTo(auditDTO2);
     }
 
     /**

@@ -1,14 +1,17 @@
-db:
-  url : jdbc:postgresql://localhost:5435/monitoring_service
-  username : postgres_user
-  password : postgres_pass
-  driver : org.postgresql.Driver
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5435/monitoring_service
+    username: postgres_user
+    password: postgres_pass
+    driver-class-name: org.postgresql.Driver
 
-liquibase:
-  change-log: classpath:db.changelog/db.changelog-master.xml
-  liquibase-schema: migration
+  liquibase:
+    change-log: classpath:db.changelog/db.changelog-master.xml
+    liquibase-schema: migration
+    default-schema: develop
 
-jwt:
-  secret: c3VwZXJwdXBlcmR1cGVybWVnYWhhcmRvdmVydG9waGlnaHNlY3JldA==
-  access: 3600000
-  refresh: 2592000000
+security:
+  jwt:
+    secret: c3VwZXJwdXBlcmR1cGVybWVnYWhhcmRvdmVydG9waGlnaHNlY3JldA==
+    access: 3600000
+    refresh: 2592000000
