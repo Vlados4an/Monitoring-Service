@@ -1,6 +1,5 @@
 package ru.erma.in.controllers;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,7 +15,6 @@ import ru.erma.service.ReadingStructureService;
 import ru.erma.service.SecurityService;
 
 import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
