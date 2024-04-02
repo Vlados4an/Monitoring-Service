@@ -10,8 +10,6 @@ import ru.erma.model.User;
 import ru.erma.model.UserEntity;
 import ru.erma.repository.UserRepository;
 
-import java.util.Optional;
-
 /**
  * The UserService class provides services related to User operations.
  * It uses a UserRepository to perform operations on User data.
@@ -36,8 +34,9 @@ public class UserService implements UserDetailsService {
     @ActionLogger
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> optionalUserEntity = userRepository.findByUsername(username);
-        UserEntity userEntity = optionalUserEntity.orElseThrow(() -> new UserNotFoundException("Player with username " + username + " not found!"));
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Player with username " + username + " not found!"));
+
         return new User(userEntity);
     }
 }
