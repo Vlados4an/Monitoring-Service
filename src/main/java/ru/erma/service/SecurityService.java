@@ -28,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SecurityService {
 
-    private final UserRepository<String, UserEntity> userRepository;
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -47,8 +47,7 @@ public class SecurityService {
     public UserEntity register(SecurityDTO securityDTO) {
         String username = securityDTO.username();
 
-        Optional<String> existingUsername = userRepository.findUsername(username);
-        if (existingUsername.isPresent()) {
+        if (userRepository.existsByUsername(username)) {
             throw new RegisterException("The user with this username already exists.");
         }
 
@@ -72,8 +71,9 @@ public class SecurityService {
         String username = securityDTO.username();
         String password = securityDTO.password();
 
-        userRepository.findUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+        if(!userRepository.existsByUsername(username)){
+            throw new UserNotFoundException("User not found with username: " + username);
+        }
 
         Role role = userRepository.findRoleByUsername(username);
 
@@ -105,6 +105,6 @@ public class SecurityService {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
         user.setRole(Role.ADMIN.name());
-        userRepository.update(user);
+        userRepository.save(user);
     }
 }

@@ -24,7 +24,7 @@ class AuditAspectServiceTest {
      * Mock of AuditRepository used in the tests.
      */
     @Mock
-    private AuditRepository<Audit> auditRepository;
+    private AuditRepository auditRepository;
 
     /**
      * The AuditService instance under test, with mocked dependencies.

@@ -1,7 +1,7 @@
 package ru.erma.service;
 
-import ru.erma.model.Audit;
+import ru.erma.model.AuditDTO;
 
 public interface AuditAspectService {
-    void saveAudit(Audit audit);
+    void saveAudit(AuditDTO audit);
 }

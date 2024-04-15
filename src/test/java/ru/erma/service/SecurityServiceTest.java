@@ -35,7 +35,7 @@ class SecurityServiceTest {
      * A mock UserRepository provided by Mockito.
      */
     @Mock
-    private UserRepository<String, UserEntity> userRepository;
+    private UserRepository userRepository;
 
     @Mock
     private UserMapper userMapper;
@@ -93,7 +93,7 @@ class SecurityServiceTest {
         SecurityDTO securityDTO = new SecurityDTO(username, "testPass");
 
 
-        when(userRepository.findUsername(username)).thenReturn(Optional.of(username));
+        when(userRepository.existsByUsername(username)).thenReturn(true);
 
         assertThatThrownBy(() -> securityService.register(securityDTO))
                 .isInstanceOf(RegisterException.class)
@@ -112,7 +112,7 @@ class SecurityServiceTest {
         String password = "testPass";
         SecurityDTO securityDTO = new SecurityDTO(username, password);
 
-        when(userRepository.findUsername(username)).thenReturn(Optional.of(username));
+        when(userRepository.existsByUsername(username)).thenReturn(true);
         when(userRepository.findRoleByUsername(username)).thenReturn(Role.USER);
 
         JwtResponse result = securityService.authorization(securityDTO);
@@ -154,7 +154,7 @@ class SecurityServiceTest {
         securityService.assignAdmin(username);
 
         assertThat(userEntity.getRole()).isEqualTo(Role.ADMIN.name());
-        verify(userRepository, times(1)).update(userEntity);
+        verify(userRepository, times(1)).save(userEntity);
     }
 
     /**

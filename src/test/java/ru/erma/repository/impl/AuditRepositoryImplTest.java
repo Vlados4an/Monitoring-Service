@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 public class AuditRepositoryImplTest extends AbstractTestContainerConfig {
 
     @Autowired
-    private AuditRepository<Audit> auditRepository;
+    private AuditRepository auditRepository;
 
     /**
      * Tests that the save method correctly saves an audit to the database.

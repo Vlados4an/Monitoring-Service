@@ -26,7 +26,7 @@ class UserServiceTest {
      * Mock of UserRepository used in the tests.
      */
     @Mock
-    private UserRepository<String, UserEntity> userRepository;
+    private UserRepository userRepository;
 
     /**
      * The UserService instance under test, with mocked dependencies.
