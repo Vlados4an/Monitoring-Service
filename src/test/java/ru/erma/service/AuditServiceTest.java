@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AuditServiceTest {
     @Mock
-    private AuditRepository<Audit> auditRepository;
+    private AuditRepository auditRepository;
     @Mock
     private AuditMapper auditMapper;
     @InjectMocks
@@ -54,7 +54,7 @@ public class AuditServiceTest {
         AuditDTO auditDTO2 = new AuditDTO(audit2.getUsername(), audit2.getTimestamp(), audit2.getAction());
         List<AuditDTO> auditDTOs = List.of(auditDTO1, auditDTO2);
 
-        when(auditMapper.toAuditListDTO(audits)).thenReturn(auditDTOs);
+        when(auditMapper.toDtoList(audits)).thenReturn(auditDTOs);
 
         List<AuditDTO> allAudits = auditService.getAllAudits();
 

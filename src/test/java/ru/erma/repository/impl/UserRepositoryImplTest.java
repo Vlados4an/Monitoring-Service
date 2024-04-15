@@ -23,7 +23,7 @@ import static ru.erma.model.Role.USER;
 public class UserRepositoryImplTest extends AbstractTestContainerConfig {
 
     @Autowired
-    private UserRepository<String, UserEntity> userRepository;
+    private UserRepository userRepository;
 
     /**
      * This test checks that the findByUsername method correctly retrieves a user from the database.
@@ -102,7 +102,7 @@ public class UserRepositoryImplTest extends AbstractTestContainerConfig {
         userRepository.save(user);
 
         user.setRole(ADMIN.name());
-        userRepository.update(user);
+        userRepository.save(user);
 
         Role updatedRole = userRepository.findRoleByUsername(user.getUsername());
 

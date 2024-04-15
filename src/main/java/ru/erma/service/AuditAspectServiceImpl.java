@@ -2,9 +2,9 @@ package ru.erma.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.erma.dto.AuditDTO;
 import ru.erma.model.Audit;
 import ru.erma.repository.AuditRepository;
-
 
 /**
  * This class provides services related to Audit operations.
@@ -14,7 +14,7 @@ import ru.erma.repository.AuditRepository;
 @RequiredArgsConstructor
 public class AuditAspectServiceImpl implements AuditAspectService {
 
-    private final AuditRepository<Audit> auditRepository;
+    private final AuditRepository auditRepository;
 
     /**
      * Saves the given audit record to the AuditRepository.
@@ -22,7 +22,7 @@ public class AuditAspectServiceImpl implements AuditAspectService {
      * @param audit the audit record to save
      */
     @Override
-    public void saveAudit(Audit audit) {
+    public void saveAudit(AuditDTO audit) {
         auditRepository.save(audit);
     }
 

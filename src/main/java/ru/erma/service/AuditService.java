@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuditService {
 
-    private final AuditRepository<Audit> auditRepository;
+    private final AuditRepository auditRepository;
 
     private final AuditMapper mapper;
 
@@ -35,6 +35,6 @@ public class AuditService {
         if (audits.isEmpty()) {
             throw new NoLogsFoundException("No audit logs found");
         }
-        return mapper.toAuditListDTO(audits);
+        return mapper.toDtoList(audits);
     }
 }
