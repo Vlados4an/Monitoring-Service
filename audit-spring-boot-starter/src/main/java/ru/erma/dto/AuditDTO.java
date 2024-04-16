@@ -1,4 +1,4 @@
-package ru.erma.model;
+package ru.erma.dto;
 
 
 import lombok.AllArgsConstructor;

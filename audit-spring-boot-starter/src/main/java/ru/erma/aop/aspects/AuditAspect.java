@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 import ru.erma.aop.annotations.Audit;
-import ru.erma.model.AuditDTO;
+import ru.erma.dto.AuditDTO;
 import ru.erma.service.AuditAspectService;
 import ru.erma.service.UsernameProvider;
 
